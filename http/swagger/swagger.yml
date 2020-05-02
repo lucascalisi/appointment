@@ -1,0 +1,620 @@
+consumes:
+- application/json
+info:
+  contact:
+    email: calisi.lucas@gmail.com
+    name: calisi.lucas
+  description: API to TPO UADE (Aplicaciones Distribuidas)
+  title: APPointment Backend
+  version: v1
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
+definitions:
+  user:
+    type: object
+    required:
+      - id
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+        format: password
+      id:
+        type: string
+      status:
+        $ref: "#/definitions/userStatus"
+      whenCreated:
+        type: string
+        format: date
+      lastPasswordChange:
+        type: string
+        format: date
+
+  userStatus:
+    type: string
+    default: pending
+    enum:
+      - enabled
+      - disabled
+      - locked
+      - pending
+
+  userRequestBody:
+    type: object
+    required:
+        - userData
+    properties:
+      userData:
+        $ref: "#/definitions/user"
+      patientData:
+        $ref: "#/definitions/patient"
+      professionalData:
+        $ref: "#/definitions/professional"
+
+  role:
+    type: object
+    required:
+      - name
+      - description
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+
+  patient:
+    type: object
+    required:
+      - name
+      - dni
+      - sex
+      - birthDay
+    properties:
+      id:
+        type: integer
+      userName:
+        type: string
+      name:
+        type: string
+      dni:
+        type: integer
+      sex:
+        type: string
+        enum:
+          - masculino
+          - femenino
+      birthDay:
+        type: string
+        format: date
+
+  professional:
+    type: object
+    required:
+      - name
+      - dni
+      - doctorNumber
+      - birthDay
+    properties:
+      id:
+        type: integer
+      userName:
+        type: string
+      name:
+        type: string
+      dni:
+        type: integer
+      doctorNumber:
+        type: integer
+      birthDay:
+        type: string
+        format: date
+
+  specialty:
+    type: object
+    required:
+      - category
+    properties:
+      id:
+        type: integer
+      category:
+        type: string
+      subCategory:
+        type: string
+
+  schedule:
+    type: object
+    required:
+      - year
+      - month
+      - schedule
+    properties:
+      id:
+        type: integer
+      year:
+        type: integer
+      month:
+        type: integer
+      schedule:
+        type: array
+        items:
+          type: object
+          properties:
+            day:
+              type: integer
+            startTime:
+              type: integer
+              default: 9
+            finishTime:
+              type: integer
+              default: 18
+  appointment:
+    type: object
+    required:
+      - date
+      - status
+    properties:
+      id:
+        type: integer
+      date:
+        type: string
+        format: date
+      status:
+        $ref: "#/definitions/appointmentStatus"
+      patient:
+          $ref: "#/definitions/patient"
+      professional:
+          $ref: "#/definitions/professional"
+
+  appointmentStatus:
+    type: string
+    enum:
+      - confirmed
+      - cancelled
+      - pending
+      - avaiable
+
+  error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int
+        readOnly: true
+      type:
+        type: string
+        readOnly: true
+      description:
+        type: string
+        readOnly: true
+paths:
+  /v1/users/{id}/role:
+    get:
+      operationId: getRoleOfUser
+      tags:
+          - users
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id user
+      responses:
+        200:
+          description: get user role
+          schema:
+            $ref: "#/definitions/role"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/login:
+    post:
+      operationId: login
+      tags:
+        - login
+      parameters:
+        - name: credentials
+          in: body
+          schema:
+            type: object
+            required:
+              - user
+              - password
+            properties:
+              user:
+                type: string
+              password:
+                type: string
+                format: password
+      responses:
+        200:
+          description: login successful
+        401:
+          description: access denied
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/patients/{id}:
+    get:
+      operationId: getPatientbyId
+      tags:
+          - patients
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id patient
+      responses:
+        200:
+          description: result get patient
+          schema:
+            $ref: "#/definitions/patient"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/patients/{id}/appointments:
+    get:
+      operationId: getAppointmentsByPatient
+      tags:
+          - patients
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id patient
+      responses:
+        200:
+          description: appoints for a patient
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+  
+  /v1/patients/{id}/appointments/{idAppointment}/confirm:
+    post:
+      operationId: confirmAppointmentForPatient
+      tags:
+          - patients
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id patient
+        - name: idAppointment
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: confirm appoinment
+      responses:
+        200:
+          description: appoint for a patient
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/patients/{id}/appointments/{idAppointment}/cancel:
+    post:
+      operationId: cancelAppoinmentForPatient
+      tags:
+          - patients
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id patient
+        - name: idAppointment
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: confirm appoinment
+      responses:
+        200:
+          description: appoint for a patient
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/professionals/{id}:
+    get:
+      operationId: getProfessionalbyId
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+      responses:
+        200:
+          description: result professional
+          schema:
+            $ref: "#/definitions/professional"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/professionals/{id}/appointments:
+    get:
+      operationId: getAppointmentsByprofessional
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+      responses:
+        200:
+          description: result search appointment professional
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/professionals/{id}/appointments/{idappointment}:
+    get:
+      operationId: getAppointmentByProfessionalAppointmentId
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+        - name: idappointment
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id appointment
+      responses:
+        200:
+          description: get appointment for professional
+          schema:
+            $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/professionals/{id}/appointments/{idappointment}/cancel:
+    post:
+      operationId: cancelAppointmentProfessional
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+        - name: idappointment
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id appointment
+      responses:
+        200:
+          description: get appointment for professional
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/professionals/{id}/specialties:
+    get:
+      operationId: getSpecialtiesByProfessional
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+      responses:
+        200:
+          description: resultado specialties professional
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/specialty"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+  
+  /v1/professionals/{id}/specialties/{idSpecialty}/schedule:
+    get:
+      operationId: getProfesionalScheduleBySpecialty
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+        - name: idSpecialty
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id specialty
+      responses:
+        200:
+          description: resultado schedule professional by specialty
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/schedule"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+    post:
+      operationId: setProfesionalScheduleBySpecialty
+      tags:
+          - professionals
+      parameters:
+        - name: id
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id professional
+        - name: idSpecialty
+          in: path
+          type: integer
+          format: int64
+          required: true
+          description: id specialty
+        - name: schedule
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/schedule"
+      responses:
+        200:
+          description: resultado schedule professional by specialty
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/schedule"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/appointments:
+    get:
+      operationId: searchAppointment
+      tags:
+          - appointments
+      parameters:
+        - name: idPatient
+          type: integer
+          in: query
+          description: id of the patient
+        - name: idProfessional
+          type: integer
+          in: query
+          description: id of the professional
+        - name: startDate
+          type: string
+          format: date
+          in: query
+          description: start date for appointment
+        - name: startFinish
+          type: string
+          format: date
+          in: query
+          description: finish date for appointment
+        - name: idspecialty
+          type: integer
+          in: query
+          description: id for specialty
+        - name: status
+          in: query
+          type: string
+          enum:
+            - confirmed
+            - cancelled
+            - pending
+            - avaiable
+          default: "avaiable"
+          description: appointment status
+      responses:
+        200:
+          description: result search appointments
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/appointment"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+  /v1/specialties:
+    get:
+      operationId: searchSpecialty
+      tags:
+          - specialties
+      parameters:
+        - name: category
+          in: query
+          type: string
+          default: ""
+          description: main category
+        - name: subCategory
+          in: query
+          type: string
+          default: ""
+          description: secundary category
+      responses:
+        200:
+          description: result search specialties
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/specialty"
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
