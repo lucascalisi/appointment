@@ -5,7 +5,7 @@ info:
     email: calisi.lucas@gmail.com
     name: calisi.lucas
   description: API to TPO UADE (Aplicaciones Distribuidas)
-  title: APPointment Backend
+  title: Healthy Calendar +
   version: v1
 produces:
 - application/json
