@@ -249,7 +249,7 @@ paths:
             $ref: "#/definitions/error"
 
   /v1/patients/{id}/appointments/{idAppointment}/confirm:
-    post:
+    put:
       operationId: confirmAppointmentForPatient
       tags:
           - patients
@@ -279,7 +279,7 @@ paths:
             $ref: "#/definitions/error"
 
   /v1/patients/{id}/appointments/{idAppointment}/request:
-    post:
+    put:
       operationId: requestAppointmentForPatient
       tags:
           - patients
@@ -309,7 +309,7 @@ paths:
             $ref: "#/definitions/error"
 
   /v1/patients/{id}/appointments/{idAppointment}/cancel:
-    post:
+    put:
       operationId: cancelAppoinmentForPatient
       tags:
           - patients
