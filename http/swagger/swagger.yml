@@ -13,51 +13,6 @@ schemes:
 - http
 swagger: "2.0"
 definitions:
-  user:
-    type: object
-    required:
-      - id
-      - email
-      - password
-    properties:
-      email:
-        type: string
-        format: email
-      password:
-        type: string
-        format: password
-      id:
-        type: string
-      status:
-        $ref: "#/definitions/userStatus"
-      whenCreated:
-        type: string
-        format: date
-      lastPasswordChange:
-        type: string
-        format: date
-
-  userStatus:
-    type: string
-    default: pending
-    enum:
-      - enabled
-      - disabled
-      - locked
-      - pending
-
-  userRequestBody:
-    type: object
-    required:
-        - userData
-    properties:
-      userData:
-        $ref: "#/definitions/user"
-      patientData:
-        $ref: "#/definitions/patient"
-      professionalData:
-        $ref: "#/definitions/professional"
-
   role:
     type: object
     required:
@@ -292,7 +247,7 @@ paths:
           description: internal server error
           schema:
             $ref: "#/definitions/error"
-  
+
   /v1/patients/{id}/appointments/{idAppointment}/confirm:
     post:
       operationId: confirmAppointmentForPatient
@@ -458,7 +413,7 @@ paths:
             $ref: "#/definitions/error"
 
   /v1/professionals/{id}/appointments/{idappointment}/cancel:
-    post:
+    put:
       operationId: cancelAppointmentProfessional
       tags:
           - professionals
@@ -482,9 +437,9 @@ paths:
           description: internal server error
           schema:
             $ref: "#/definitions/error"
-            
+
   /v1/professionals/{id}/appointments/{idappointment}/attend:
-    post:
+    put:
       operationId: attendAppointmentProfessional
       tags:
           - professionals
@@ -532,7 +487,7 @@ paths:
           description: internal server error
           schema:
             $ref: "#/definitions/error"
-  
+
   /v1/professionals/{id}/specialties/{idSpecialty}/schedule:
     get:
       operationId: getProfesionalScheduleBySpecialty
