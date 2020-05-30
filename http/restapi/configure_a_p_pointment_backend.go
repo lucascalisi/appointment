@@ -14,7 +14,6 @@ import (
 	"github.com/appointment/config"
 	"github.com/appointment/http/restapi/operations"
 	"github.com/appointment/http/restapi/operations/appointments"
-	"github.com/appointment/http/restapi/operations/login"
 	"github.com/appointment/http/restapi/operations/patients"
 	"github.com/appointment/http/restapi/operations/professionals"
 	"github.com/appointment/http/restapi/operations/specialties"
@@ -110,11 +109,9 @@ func configureAPI(api *operations.APPointmentBackendAPI) http.Handler {
 			return middleware.NotImplemented("operation professionals.GetSpecialtiesByProfessional has not yet been implemented")
 		})
 	}
-	if api.LoginLoginHandler == nil {
-		api.LoginLoginHandler = login.LoginHandlerFunc(func(params login.LoginParams) middleware.Responder {
-			return middleware.NotImplemented("operation login.Login has not yet been implemented")
-		})
-	}
+
+	api.LoginLoginHandler = authenticate(db)
+
 	if api.AppointmentsSearchAppointmentHandler == nil {
 		api.AppointmentsSearchAppointmentHandler = appointments.SearchAppointmentHandlerFunc(func(params appointments.SearchAppointmentParams) middleware.Responder {
 			return middleware.NotImplemented("operation appointments.SearchAppointment has not yet been implemented")
