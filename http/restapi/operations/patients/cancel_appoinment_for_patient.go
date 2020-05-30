@@ -29,7 +29,7 @@ func NewCancelAppoinmentForPatient(ctx *middleware.Context, handler CancelAppoin
 	return &CancelAppoinmentForPatient{Context: ctx, Handler: handler}
 }
 
-/*CancelAppoinmentForPatient swagger:route POST /v1/patients/{id}/appointments/{idAppointment}/cancel patients cancelAppoinmentForPatient
+/*CancelAppoinmentForPatient swagger:route PUT /v1/patients/{id}/appointments/{idAppointment}/cancel patients cancelAppoinmentForPatient
 
 CancelAppoinmentForPatient cancel appoinment for patient API
 

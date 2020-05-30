@@ -25,6 +25,34 @@ type Client struct {
 }
 
 /*
+AttendAppointmentProfessional attend appointment professional API
+*/
+func (a *Client) AttendAppointmentProfessional(params *AttendAppointmentProfessionalParams) (*AttendAppointmentProfessionalOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewAttendAppointmentProfessionalParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "attendAppointmentProfessional",
+		Method:             "PUT",
+		PathPattern:        "/v1/professionals/{id}/appointments/{idappointment}/attend",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &AttendAppointmentProfessionalReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*AttendAppointmentProfessionalOK), nil
+
+}
+
+/*
 CancelAppointmentProfessional cancel appointment professional API
 */
 func (a *Client) CancelAppointmentProfessional(params *CancelAppointmentProfessionalParams) (*CancelAppointmentProfessionalOK, error) {
@@ -35,7 +63,7 @@ func (a *Client) CancelAppointmentProfessional(params *CancelAppointmentProfessi
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
 		ID:                 "cancelAppointmentProfessional",
-		Method:             "POST",
+		Method:             "PUT",
 		PathPattern:        "/v1/professionals/{id}/appointments/{idappointment}/cancel",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},

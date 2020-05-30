@@ -64,13 +64,21 @@ func NewLoginOK() *LoginOK {
 login successful
 */
 type LoginOK struct {
+	Payload *models.User
 }
 
 func (o *LoginOK) Error() string {
-	return fmt.Sprintf("[POST /v1/login][%d] loginOK ", 200)
+	return fmt.Sprintf("[POST /v1/login][%d] loginOK  %+v", 200, o.Payload)
 }
 
 func (o *LoginOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.User)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

@@ -30,7 +30,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "API to TPO UADE (Aplicaciones Distribuidas)",
-    "title": "APPointment Backend",
+    "title": "Healthy Calendar +",
     "contact": {
       "name": "calisi.lucas",
       "email": "calisi.lucas@gmail.com"
@@ -140,7 +140,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "login successful"
+            "description": "login successful",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
           },
           "401": {
             "description": "access denied"
@@ -222,7 +225,7 @@ func init() {
       }
     },
     "/v1/patients/{id}/appointments/{idAppointment}/cancel": {
-      "post": {
+      "put": {
         "tags": [
           "patients"
         ],
@@ -265,7 +268,7 @@ func init() {
       }
     },
     "/v1/patients/{id}/appointments/{idAppointment}/confirm": {
-      "post": {
+      "put": {
         "tags": [
           "patients"
         ],
@@ -283,6 +286,49 @@ func init() {
             "type": "integer",
             "format": "int64",
             "description": "confirm appoinment",
+            "name": "idAppointment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "appoint for a patient",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/appointment"
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/v1/patients/{id}/appointments/{idAppointment}/request": {
+      "put": {
+        "tags": [
+          "patients"
+        ],
+        "operationId": "requestAppointmentForPatient",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id patient",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "request appoinment",
             "name": "idAppointment",
             "in": "path",
             "required": true
@@ -414,8 +460,45 @@ func init() {
         }
       }
     },
+    "/v1/professionals/{id}/appointments/{idappointment}/attend": {
+      "put": {
+        "tags": [
+          "professionals"
+        ],
+        "operationId": "attendAppointmentProfessional",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id professional",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id appointment",
+            "name": "idappointment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "set attend appointment for professional"
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v1/professionals/{id}/appointments/{idappointment}/cancel": {
-      "post": {
+      "put": {
         "tags": [
           "professionals"
         ],
@@ -608,38 +691,6 @@ func init() {
               "items": {
                 "$ref": "#/definitions/specialty"
               }
-            }
-          },
-          "500": {
-            "description": "internal server error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{id}/role": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "getRoleOfUser",
-        "parameters": [
-          {
-            "type": "integer",
-            "format": "int64",
-            "description": "id user",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "get user role",
-            "schema": {
-              "$ref": "#/definitions/role"
             }
           },
           "500": {
@@ -844,62 +895,29 @@ func init() {
     },
     "user": {
       "type": "object",
-      "required": [
-        "id",
-        "email",
-        "password"
-      ],
       "properties": {
         "email": {
           "type": "string",
           "format": "email"
         },
         "id": {
-          "type": "string"
+          "type": "integer"
         },
-        "lastPasswordChange": {
-          "type": "string",
-          "format": "date"
-        },
-        "password": {
-          "type": "string",
-          "format": "password"
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/role"
+          }
         },
         "status": {
-          "$ref": "#/definitions/userStatus"
-        },
-        "whenCreated": {
           "type": "string",
-          "format": "date"
+          "enum": [
+            "enabled",
+            "disabled",
+            "locked"
+          ]
         }
       }
-    },
-    "userRequestBody": {
-      "type": "object",
-      "required": [
-        "userData"
-      ],
-      "properties": {
-        "patientData": {
-          "$ref": "#/definitions/patient"
-        },
-        "professionalData": {
-          "$ref": "#/definitions/professional"
-        },
-        "userData": {
-          "$ref": "#/definitions/user"
-        }
-      }
-    },
-    "userStatus": {
-      "type": "string",
-      "default": "pending",
-      "enum": [
-        "enabled",
-        "disabled",
-        "locked",
-        "pending"
-      ]
     }
   }
 }`))
@@ -916,7 +934,7 @@ func init() {
   "swagger": "2.0",
   "info": {
     "description": "API to TPO UADE (Aplicaciones Distribuidas)",
-    "title": "APPointment Backend",
+    "title": "Healthy Calendar +",
     "contact": {
       "name": "calisi.lucas",
       "email": "calisi.lucas@gmail.com"
@@ -1026,7 +1044,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "login successful"
+            "description": "login successful",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
           },
           "401": {
             "description": "access denied"
@@ -1108,7 +1129,7 @@ func init() {
       }
     },
     "/v1/patients/{id}/appointments/{idAppointment}/cancel": {
-      "post": {
+      "put": {
         "tags": [
           "patients"
         ],
@@ -1151,7 +1172,7 @@ func init() {
       }
     },
     "/v1/patients/{id}/appointments/{idAppointment}/confirm": {
-      "post": {
+      "put": {
         "tags": [
           "patients"
         ],
@@ -1169,6 +1190,49 @@ func init() {
             "type": "integer",
             "format": "int64",
             "description": "confirm appoinment",
+            "name": "idAppointment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "appoint for a patient",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/appointment"
+              }
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/v1/patients/{id}/appointments/{idAppointment}/request": {
+      "put": {
+        "tags": [
+          "patients"
+        ],
+        "operationId": "requestAppointmentForPatient",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id patient",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "request appoinment",
             "name": "idAppointment",
             "in": "path",
             "required": true
@@ -1300,8 +1364,45 @@ func init() {
         }
       }
     },
+    "/v1/professionals/{id}/appointments/{idappointment}/attend": {
+      "put": {
+        "tags": [
+          "professionals"
+        ],
+        "operationId": "attendAppointmentProfessional",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id professional",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "id appointment",
+            "name": "idappointment",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "set attend appointment for professional"
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v1/professionals/{id}/appointments/{idappointment}/cancel": {
-      "post": {
+      "put": {
         "tags": [
           "professionals"
         ],
@@ -1494,38 +1595,6 @@ func init() {
               "items": {
                 "$ref": "#/definitions/specialty"
               }
-            }
-          },
-          "500": {
-            "description": "internal server error",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      }
-    },
-    "/v1/users/{id}/role": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "getRoleOfUser",
-        "parameters": [
-          {
-            "type": "integer",
-            "format": "int64",
-            "description": "id user",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "get user role",
-            "schema": {
-              "$ref": "#/definitions/role"
             }
           },
           "500": {
@@ -1730,62 +1799,29 @@ func init() {
     },
     "user": {
       "type": "object",
-      "required": [
-        "id",
-        "email",
-        "password"
-      ],
       "properties": {
         "email": {
           "type": "string",
           "format": "email"
         },
         "id": {
-          "type": "string"
+          "type": "integer"
         },
-        "lastPasswordChange": {
-          "type": "string",
-          "format": "date"
-        },
-        "password": {
-          "type": "string",
-          "format": "password"
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/role"
+          }
         },
         "status": {
-          "$ref": "#/definitions/userStatus"
-        },
-        "whenCreated": {
           "type": "string",
-          "format": "date"
+          "enum": [
+            "enabled",
+            "disabled",
+            "locked"
+          ]
         }
       }
-    },
-    "userRequestBody": {
-      "type": "object",
-      "required": [
-        "userData"
-      ],
-      "properties": {
-        "patientData": {
-          "$ref": "#/definitions/patient"
-        },
-        "professionalData": {
-          "$ref": "#/definitions/professional"
-        },
-        "userData": {
-          "$ref": "#/definitions/user"
-        }
-      }
-    },
-    "userStatus": {
-      "type": "string",
-      "default": "pending",
-      "enum": [
-        "enabled",
-        "disabled",
-        "locked",
-        "pending"
-      ]
     }
   }
 }`))

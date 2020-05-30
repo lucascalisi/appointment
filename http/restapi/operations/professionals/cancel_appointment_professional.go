@@ -29,7 +29,7 @@ func NewCancelAppointmentProfessional(ctx *middleware.Context, handler CancelApp
 	return &CancelAppointmentProfessional{Context: ctx, Handler: handler}
 }
 
-/*CancelAppointmentProfessional swagger:route POST /v1/professionals/{id}/appointments/{idappointment}/cancel professionals cancelAppointmentProfessional
+/*CancelAppointmentProfessional swagger:route PUT /v1/professionals/{id}/appointments/{idappointment}/cancel professionals cancelAppointmentProfessional
 
 CancelAppointmentProfessional cancel appointment professional API
 

@@ -6,6 +6,9 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
+	"strconv"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -18,29 +21,18 @@ import (
 type User struct {
 
 	// email
-	// Required: true
 	// Format: email
-	Email *strfmt.Email `json:"email"`
+	Email strfmt.Email `json:"email,omitempty"`
 
 	// id
-	// Required: true
-	ID *string `json:"id"`
+	ID int64 `json:"id,omitempty"`
 
-	// last password change
-	// Format: date
-	LastPasswordChange strfmt.Date `json:"lastPasswordChange,omitempty"`
-
-	// password
-	// Required: true
-	// Format: password
-	Password *strfmt.Password `json:"password"`
+	// roles
+	Roles []*Role `json:"roles"`
 
 	// status
-	Status UserStatus `json:"status,omitempty"`
-
-	// when created
-	// Format: date
-	WhenCreated strfmt.Date `json:"whenCreated,omitempty"`
+	// Enum: [enabled disabled locked]
+	Status string `json:"status,omitempty"`
 }
 
 // Validate validates this user
@@ -51,23 +43,11 @@ func (m *User) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateID(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateLastPasswordChange(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validatePassword(formats); err != nil {
+	if err := m.validateRoles(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateStatus(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateWhenCreated(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -79,8 +59,8 @@ func (m *User) Validate(formats strfmt.Registry) error {
 
 func (m *User) validateEmail(formats strfmt.Registry) error {
 
-	if err := validate.Required("email", "body", m.Email); err != nil {
-		return err
+	if swag.IsZero(m.Email) { // not required
+		return nil
 	}
 
 	if err := validate.FormatOf("email", "body", "email", m.Email.String(), formats); err != nil {
@@ -90,38 +70,60 @@ func (m *User) validateEmail(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *User) validateID(formats strfmt.Registry) error {
+func (m *User) validateRoles(formats strfmt.Registry) error {
 
-	if err := validate.Required("id", "body", m.ID); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *User) validateLastPasswordChange(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.LastPasswordChange) { // not required
+	if swag.IsZero(m.Roles) { // not required
 		return nil
 	}
 
-	if err := validate.FormatOf("lastPasswordChange", "body", "date", m.LastPasswordChange.String(), formats); err != nil {
-		return err
+	for i := 0; i < len(m.Roles); i++ {
+		if swag.IsZero(m.Roles[i]) { // not required
+			continue
+		}
+
+		if m.Roles[i] != nil {
+			if err := m.Roles[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("roles" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
 }
 
-func (m *User) validatePassword(formats strfmt.Registry) error {
+var userTypeStatusPropEnum []interface{}
 
-	if err := validate.Required("password", "body", m.Password); err != nil {
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["enabled","disabled","locked"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		userTypeStatusPropEnum = append(userTypeStatusPropEnum, v)
+	}
+}
+
+const (
+
+	// UserStatusEnabled captures enum value "enabled"
+	UserStatusEnabled string = "enabled"
+
+	// UserStatusDisabled captures enum value "disabled"
+	UserStatusDisabled string = "disabled"
+
+	// UserStatusLocked captures enum value "locked"
+	UserStatusLocked string = "locked"
+)
+
+// prop value enum
+func (m *User) validateStatusEnum(path, location string, value string) error {
+	if err := validate.Enum(path, location, value, userTypeStatusPropEnum); err != nil {
 		return err
 	}
-
-	if err := validate.FormatOf("password", "body", "password", m.Password.String(), formats); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -131,23 +133,8 @@ func (m *User) validateStatus(formats strfmt.Registry) error {
 		return nil
 	}
 
-	if err := m.Status.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("status")
-		}
-		return err
-	}
-
-	return nil
-}
-
-func (m *User) validateWhenCreated(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.WhenCreated) { // not required
-		return nil
-	}
-
-	if err := validate.FormatOf("whenCreated", "body", "date", m.WhenCreated.String(), formats); err != nil {
+	// value enum
+	if err := m.validateStatusEnum("status", "body", m.Status); err != nil {
 		return err
 	}
 

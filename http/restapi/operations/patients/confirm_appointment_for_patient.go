@@ -29,7 +29,7 @@ func NewConfirmAppointmentForPatient(ctx *middleware.Context, handler ConfirmApp
 	return &ConfirmAppointmentForPatient{Context: ctx, Handler: handler}
 }
 
-/*ConfirmAppointmentForPatient swagger:route POST /v1/patients/{id}/appointments/{idAppointment}/confirm patients confirmAppointmentForPatient
+/*ConfirmAppointmentForPatient swagger:route PUT /v1/patients/{id}/appointments/{idAppointment}/confirm patients confirmAppointmentForPatient
 
 ConfirmAppointmentForPatient confirm appointment for patient API
 

@@ -35,7 +35,7 @@ func (a *Client) CancelAppoinmentForPatient(params *CancelAppoinmentForPatientPa
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
 		ID:                 "cancelAppoinmentForPatient",
-		Method:             "POST",
+		Method:             "PUT",
 		PathPattern:        "/v1/patients/{id}/appointments/{idAppointment}/cancel",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
@@ -63,7 +63,7 @@ func (a *Client) ConfirmAppointmentForPatient(params *ConfirmAppointmentForPatie
 
 	result, err := a.transport.Submit(&runtime.ClientOperation{
 		ID:                 "confirmAppointmentForPatient",
-		Method:             "POST",
+		Method:             "PUT",
 		PathPattern:        "/v1/patients/{id}/appointments/{idAppointment}/confirm",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
@@ -133,6 +133,34 @@ func (a *Client) GetPatientbyID(params *GetPatientbyIDParams) (*GetPatientbyIDOK
 		return nil, err
 	}
 	return result.(*GetPatientbyIDOK), nil
+
+}
+
+/*
+RequestAppointmentForPatient request appointment for patient API
+*/
+func (a *Client) RequestAppointmentForPatient(params *RequestAppointmentForPatientParams) (*RequestAppointmentForPatientOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewRequestAppointmentForPatientParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "requestAppointmentForPatient",
+		Method:             "PUT",
+		PathPattern:        "/v1/patients/{id}/appointments/{idAppointment}/request",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &RequestAppointmentForPatientReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*RequestAppointmentForPatientOK), nil
 
 }
 

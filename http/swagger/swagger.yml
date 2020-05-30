@@ -25,7 +25,26 @@ definitions:
         type: string
       description:
         type: string
-
+  
+  user:
+    type: object
+    properties:
+      id:
+        type: integer
+      email:
+        type: string
+        format: email
+      status:
+        type: string
+        enum:
+          - enabled
+          - disabled
+          - locked
+      roles:
+        type: array
+        items:
+          $ref: "#/definitions/role"
+        
   patient:
     type: object
     required:
@@ -151,28 +170,6 @@ definitions:
         type: string
         readOnly: true
 paths:
-  /v1/users/{id}/role:
-    get:
-      operationId: getRoleOfUser
-      tags:
-          - users
-      parameters:
-        - name: id
-          in: path
-          type: integer
-          format: int64
-          required: true
-          description: id user
-      responses:
-        200:
-          description: get user role
-          schema:
-            $ref: "#/definitions/role"
-        500:
-          description: internal server error
-          schema:
-            $ref: "#/definitions/error"
-
   /v1/login:
     post:
       operationId: login
@@ -195,6 +192,9 @@ paths:
       responses:
         200:
           description: login successful
+          schema:
+            $ref: "#/definitions/user"
+            
         401:
           description: access denied
         500:

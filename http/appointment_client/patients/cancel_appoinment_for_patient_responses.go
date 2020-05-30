@@ -58,7 +58,7 @@ type CancelAppoinmentForPatientOK struct {
 }
 
 func (o *CancelAppoinmentForPatientOK) Error() string {
-	return fmt.Sprintf("[POST /v1/patients/{id}/appointments/{idAppointment}/cancel][%d] cancelAppoinmentForPatientOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /v1/patients/{id}/appointments/{idAppointment}/cancel][%d] cancelAppoinmentForPatientOK  %+v", 200, o.Payload)
 }
 
 func (o *CancelAppoinmentForPatientOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -85,7 +85,7 @@ type CancelAppoinmentForPatientInternalServerError struct {
 }
 
 func (o *CancelAppoinmentForPatientInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /v1/patients/{id}/appointments/{idAppointment}/cancel][%d] cancelAppoinmentForPatientInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[PUT /v1/patients/{id}/appointments/{idAppointment}/cancel][%d] cancelAppoinmentForPatientInternalServerError  %+v", 500, o.Payload)
 }
 
 func (o *CancelAppoinmentForPatientInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
