@@ -16,7 +16,6 @@ import (
 	"github.com/appointment/http/restapi/operations/appointments"
 	"github.com/appointment/http/restapi/operations/patients"
 	"github.com/appointment/http/restapi/operations/professionals"
-	"github.com/appointment/http/restapi/operations/specialties"
 	"github.com/appointment/mysql"
 )
 
@@ -112,11 +111,9 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 			return middleware.NotImplemented("operation appointments.SearchAppointment has not yet been implemented")
 		})
 	}
-	if api.SpecialtiesSearchSpecialtyHandler == nil {
-		api.SpecialtiesSearchSpecialtyHandler = specialties.SearchSpecialtyHandlerFunc(func(params specialties.SearchSpecialtyParams) middleware.Responder {
-			return middleware.NotImplemented("operation specialties.SearchSpecialty has not yet been implemented")
-		})
-	}
+
+	api.SpecialtiesSearchSpecialtyHandler = searchSpecialties(db)
+
 	if api.ProfessionalsSetProfesionalScheduleBySpecialtyHandler == nil {
 		api.ProfessionalsSetProfesionalScheduleBySpecialtyHandler = professionals.SetProfesionalScheduleBySpecialtyHandlerFunc(func(params professionals.SetProfesionalScheduleBySpecialtyParams) middleware.Responder {
 			return middleware.NotImplemented("operation professionals.SetProfesionalScheduleBySpecialty has not yet been implemented")
