@@ -82,21 +82,16 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 			return middleware.NotImplemented("operation professionals.GetAppointmentsByprofessional has not yet been implemented")
 		})
 	}
-	if api.PatientsGetPatientbyIDHandler == nil {
-		api.PatientsGetPatientbyIDHandler = patients.GetPatientbyIDHandlerFunc(func(params patients.GetPatientbyIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation patients.GetPatientbyID has not yet been implemented")
-		})
-	}
+
+	api.PatientsGetPatientbyIDHandler = getPatient(db)
+
 	if api.ProfessionalsGetProfesionalScheduleBySpecialtyHandler == nil {
 		api.ProfessionalsGetProfesionalScheduleBySpecialtyHandler = professionals.GetProfesionalScheduleBySpecialtyHandlerFunc(func(params professionals.GetProfesionalScheduleBySpecialtyParams) middleware.Responder {
 			return middleware.NotImplemented("operation professionals.GetProfesionalScheduleBySpecialty has not yet been implemented")
 		})
 	}
-	if api.ProfessionalsGetProfessionalbyIDHandler == nil {
-		api.ProfessionalsGetProfessionalbyIDHandler = professionals.GetProfessionalbyIDHandlerFunc(func(params professionals.GetProfessionalbyIDParams) middleware.Responder {
-			return middleware.NotImplemented("operation professionals.GetProfessionalbyID has not yet been implemented")
-		})
-	}
+
+	api.ProfessionalsGetProfessionalbyIDHandler = getProfessional(db)
 
 	if api.ProfessionalsGetSpecialtiesByProfessionalHandler == nil {
 		api.ProfessionalsGetSpecialtiesByProfessionalHandler = professionals.GetSpecialtiesByProfessionalHandlerFunc(func(params professionals.GetSpecialtiesByProfessionalParams) middleware.Responder {

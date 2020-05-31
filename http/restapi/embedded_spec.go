@@ -784,9 +784,6 @@ func init() {
             "masculino",
             "femenino"
           ]
-        },
-        "userName": {
-          "type": "string"
         }
       }
     },
@@ -813,9 +810,6 @@ func init() {
           "type": "integer"
         },
         "name": {
-          "type": "string"
-        },
-        "userName": {
           "type": "string"
         }
       }
@@ -1688,9 +1682,6 @@ func init() {
             "masculino",
             "femenino"
           ]
-        },
-        "userName": {
-          "type": "string"
         }
       }
     },
@@ -1717,9 +1708,6 @@ func init() {
           "type": "integer"
         },
         "name": {
-          "type": "string"
-        },
-        "userName": {
           "type": "string"
         }
       }

@@ -53,4 +53,6 @@ func stackTrace() []uintptr {
 	return callers[0:written]
 }
 
-var AnauthorizedUser error = fmt.Errorf("user or password incorrect")
+var UnauthorizedUser error = fmt.Errorf("user or password incorrect")
+
+var NotFound error = fmt.Errorf("not found")

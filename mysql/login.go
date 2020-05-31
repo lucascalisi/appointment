@@ -35,7 +35,7 @@ func (db *DB) Login(cred rec.LoginAuth) (rec.User, error) {
 	}
 
 	if count == 0 {
-		return rec.User{}, rec.AnauthorizedUser
+		return rec.User{}, rec.UnauthorizedUser
 	}
 	user.Roles = roles
 

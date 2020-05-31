@@ -11,11 +11,17 @@ func newRestApiError(err error) *models.Error {
 	}
 
 	switch err {
-	case rec.AnauthorizedUser:
+	case rec.UnauthorizedUser:
 		return &models.Error{
 			Description: err.Error(),
 			Code:        401,
 			Type:        "access denied",
+		}
+	case rec.NotFound:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        404,
+			Type:        "not found",
 		}
 	}
 

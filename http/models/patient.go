@@ -39,9 +39,6 @@ type Patient struct {
 	// Required: true
 	// Enum: [masculino femenino]
 	Sex *string `json:"sex"`
-
-	// user name
-	UserName string `json:"userName,omitempty"`
 }
 
 // Validate validates this patient

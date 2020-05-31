@@ -36,9 +36,6 @@ type Professional struct {
 	// name
 	// Required: true
 	Name *string `json:"name"`
-
-	// user name
-	UserName string `json:"userName,omitempty"`
 }
 
 // Validate validates this professional

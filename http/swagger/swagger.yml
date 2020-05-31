@@ -55,8 +55,6 @@ definitions:
     properties:
       id:
         type: integer
-      userName:
-        type: string
       name:
         type: string
       dni:
@@ -80,8 +78,6 @@ definitions:
     properties:
       id:
         type: integer
-      userName:
-        type: string
       name:
         type: string
       dni:

@@ -27,26 +27,24 @@ CREATE TABLE `users_roles`(
 );
 
 CREATE TABLE `patients` (
-	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`idUser` int(11) NOT NULL,
 	`dni` varchar(20)  NOT NULL UNIQUE,
 	`name` varchar(500) NOT NULL,
-	`idUser` int(11) NOT NULL,
 	`sex` varchar(20) NOT NULL,
 	`birthDay` datetime NULL,
-	 PRIMARY KEY (`id`),
+	 PRIMARY KEY (`idUser`),
 	 FOREIGN KEY (idUser) REFERENCES users(id)
 );
 
 
 CREATE TABLE `professionals` (
-	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`idUser` int(11) NOT NULL,
 	`dni` varchar(20)  NOT NULL UNIQUE,
 	`doctorNumber` varchar(20)  NOT NULL UNIQUE,
 	`name` varchar(500) NOT NULL,
-	`idUser` int(11) NOT NULL,
 	`sex` varchar(50) NOT NULL,
 	`birthDay` datetime NULL,
-	 PRIMARY KEY (`id`),
+	 PRIMARY KEY (`idUser`),
 	 FOREIGN KEY (idUser) REFERENCES users(id)
 );
 
@@ -72,7 +70,7 @@ CREATE TABLE `specialityDetailsByProfessional` (
 	`idProfessional` int(11) NOT NULL,
 	 PRIMARY KEY (`id`),
 	 FOREIGN KEY (idSpecialityDetail) REFERENCES specialityDetails(id),
-	 FOREIGN KEY (idProfessional) REFERENCES professionals(id)
+	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser)
 );
 
 CREATE TABLE `professionalsSchedule` (
@@ -84,7 +82,7 @@ CREATE TABLE `professionalsSchedule` (
 	`startTime` time NOT NULL,
 	`finishTime` time NOT NULL,
 	 PRIMARY KEY (`id`),
-	 FOREIGN KEY (idProfessional) REFERENCES professionals(id)
+	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser)
 );
 
 CREATE TABLE `appointments` (
@@ -94,6 +92,6 @@ CREATE TABLE `appointments` (
 	`date` datetime NOT NULL,
 	`idPatient` int(11)  NULL,
 	 PRIMARY KEY (`id`),
-	 FOREIGN KEY (idProfessional) REFERENCES professionals(id),
-	 FOREIGN KEY (idPatient) REFERENCES patients(id)
+	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser),
+	 FOREIGN KEY (idPatient) REFERENCES patients(idUser)
 );
