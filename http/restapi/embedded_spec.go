@@ -47,32 +47,37 @@ func init() {
         "parameters": [
           {
             "type": "integer",
+            "default": 0,
             "description": "id of the patient",
             "name": "idPatient",
             "in": "query"
           },
           {
             "type": "integer",
+            "default": 0,
             "description": "id of the professional",
             "name": "idProfessional",
             "in": "query"
           },
           {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
+            "default": "2000-01-01T00:00:00Z",
             "description": "start date for appointment",
             "name": "startDate",
             "in": "query"
           },
           {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
+            "default": "2040-01-01T00:00:00Z",
             "description": "finish date for appointment",
-            "name": "startFinish",
+            "name": "finishDate",
             "in": "query"
           },
           {
             "type": "integer",
+            "default": 0,
             "description": "id for specialty",
             "name": "idspecialty",
             "in": "query"
@@ -713,7 +718,7 @@ func init() {
       "properties": {
         "date": {
           "type": "string",
-          "format": "date"
+          "format": "date-time"
         },
         "id": {
           "type": "integer"
@@ -945,32 +950,37 @@ func init() {
         "parameters": [
           {
             "type": "integer",
+            "default": 0,
             "description": "id of the patient",
             "name": "idPatient",
             "in": "query"
           },
           {
             "type": "integer",
+            "default": 0,
             "description": "id of the professional",
             "name": "idProfessional",
             "in": "query"
           },
           {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
+            "default": "2000-01-01T00:00:00Z",
             "description": "start date for appointment",
             "name": "startDate",
             "in": "query"
           },
           {
             "type": "string",
-            "format": "date",
+            "format": "date-time",
+            "default": "2040-01-01T00:00:00Z",
             "description": "finish date for appointment",
-            "name": "startFinish",
+            "name": "finishDate",
             "in": "query"
           },
           {
             "type": "integer",
+            "default": 0,
             "description": "id for specialty",
             "name": "idspecialty",
             "in": "query"
@@ -1611,7 +1621,7 @@ func init() {
       "properties": {
         "date": {
           "type": "string",
-          "format": "date"
+          "format": "date-time"
         },
         "id": {
           "type": "integer"

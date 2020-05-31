@@ -19,8 +19,8 @@ type Appointment struct {
 
 	// date
 	// Required: true
-	// Format: date
-	Date *strfmt.Date `json:"date"`
+	// Format: date-time
+	Date *strfmt.DateTime `json:"date"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
@@ -68,7 +68,7 @@ func (m *Appointment) validateDate(formats strfmt.Registry) error {
 		return err
 	}
 
-	if err := validate.FormatOf("date", "body", "date", m.Date.String(), formats); err != nil {
+	if err := validate.FormatOf("date", "body", "date-time", m.Date.String(), formats); err != nil {
 		return err
 	}
 

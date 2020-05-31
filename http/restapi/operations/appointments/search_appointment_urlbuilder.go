@@ -16,11 +16,11 @@ import (
 
 // SearchAppointmentURL generates an URL for the search appointment operation
 type SearchAppointmentURL struct {
+	FinishDate     *strfmt.DateTime
 	IDPatient      *int64
 	IDProfessional *int64
 	Idspecialty    *int64
-	StartDate      *strfmt.Date
-	StartFinish    *strfmt.Date
+	StartDate      *strfmt.DateTime
 	Status         *string
 
 	_basePath string
@@ -54,6 +54,14 @@ func (o *SearchAppointmentURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
+	var finishDateQ string
+	if o.FinishDate != nil {
+		finishDateQ = o.FinishDate.String()
+	}
+	if finishDateQ != "" {
+		qs.Set("finishDate", finishDateQ)
+	}
+
 	var iDPatientQ string
 	if o.IDPatient != nil {
 		iDPatientQ = swag.FormatInt64(*o.IDPatient)
@@ -84,14 +92,6 @@ func (o *SearchAppointmentURL) Build() (*url.URL, error) {
 	}
 	if startDateQ != "" {
 		qs.Set("startDate", startDateQ)
-	}
-
-	var startFinishQ string
-	if o.StartFinish != nil {
-		startFinishQ = o.StartFinish.String()
-	}
-	if startFinishQ != "" {
-		qs.Set("startFinish", startFinishQ)
 	}
 
 	var statusQ string

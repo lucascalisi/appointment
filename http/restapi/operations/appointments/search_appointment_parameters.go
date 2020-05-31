@@ -24,10 +24,29 @@ func NewSearchAppointmentParams() SearchAppointmentParams {
 	var (
 		// initialize parameters with default values
 
-		statusDefault = string("avaiable")
+		finishDateDefault     = strfmt.DateTime{}
+		iDPatientDefault      = int64(0)
+		iDProfessionalDefault = int64(0)
+		idspecialtyDefault    = int64(0)
+		startDateDefault      = strfmt.DateTime{}
+		statusDefault         = string("avaiable")
 	)
 
+	finishDateDefault.UnmarshalText([]byte("2040-01-01T00:00:00Z"))
+
+	startDateDefault.UnmarshalText([]byte("2000-01-01T00:00:00Z"))
+
 	return SearchAppointmentParams{
+		FinishDate: &finishDateDefault,
+
+		IDPatient: &iDPatientDefault,
+
+		IDProfessional: &iDProfessionalDefault,
+
+		Idspecialty: &idspecialtyDefault,
+
+		StartDate: &startDateDefault,
+
 		Status: &statusDefault,
 	}
 }
@@ -41,26 +60,31 @@ type SearchAppointmentParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*finish date for appointment
+	  In: query
+	  Default: "2040-01-01T00:00:00Z"
+	*/
+	FinishDate *strfmt.DateTime
 	/*id of the patient
 	  In: query
+	  Default: 0
 	*/
 	IDPatient *int64
 	/*id of the professional
 	  In: query
+	  Default: 0
 	*/
 	IDProfessional *int64
 	/*id for specialty
 	  In: query
+	  Default: 0
 	*/
 	Idspecialty *int64
 	/*start date for appointment
 	  In: query
+	  Default: "2000-01-01T00:00:00Z"
 	*/
-	StartDate *strfmt.Date
-	/*finish date for appointment
-	  In: query
-	*/
-	StartFinish *strfmt.Date
+	StartDate *strfmt.DateTime
 	/*appointment status
 	  In: query
 	  Default: "avaiable"
@@ -78,6 +102,11 @@ func (o *SearchAppointmentParams) BindRequest(r *http.Request, route *middleware
 	o.HTTPRequest = r
 
 	qs := runtime.Values(r.URL.Query())
+
+	qFinishDate, qhkFinishDate, _ := qs.GetOK("finishDate")
+	if err := o.bindFinishDate(qFinishDate, qhkFinishDate, route.Formats); err != nil {
+		res = append(res, err)
+	}
 
 	qIDPatient, qhkIDPatient, _ := qs.GetOK("idPatient")
 	if err := o.bindIDPatient(qIDPatient, qhkIDPatient, route.Formats); err != nil {
@@ -99,11 +128,6 @@ func (o *SearchAppointmentParams) BindRequest(r *http.Request, route *middleware
 		res = append(res, err)
 	}
 
-	qStartFinish, qhkStartFinish, _ := qs.GetOK("startFinish")
-	if err := o.bindStartFinish(qStartFinish, qhkStartFinish, route.Formats); err != nil {
-		res = append(res, err)
-	}
-
 	qStatus, qhkStatus, _ := qs.GetOK("status")
 	if err := o.bindStatus(qStatus, qhkStatus, route.Formats); err != nil {
 		res = append(res, err)
@@ -111,6 +135,43 @@ func (o *SearchAppointmentParams) BindRequest(r *http.Request, route *middleware
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+// bindFinishDate binds and validates parameter FinishDate from query.
+func (o *SearchAppointmentParams) bindFinishDate(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchAppointmentParams()
+		return nil
+	}
+
+	// Format: date-time
+	value, err := formats.Parse("date-time", raw)
+	if err != nil {
+		return errors.InvalidType("finishDate", "query", "strfmt.DateTime", raw)
+	}
+	o.FinishDate = (value.(*strfmt.DateTime))
+
+	if err := o.validateFinishDate(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateFinishDate carries on validations for parameter FinishDate
+func (o *SearchAppointmentParams) validateFinishDate(formats strfmt.Registry) error {
+
+	if err := validate.FormatOf("finishDate", "query", "date-time", o.FinishDate.String(), formats); err != nil {
+		return err
 	}
 	return nil
 }
@@ -125,6 +186,7 @@ func (o *SearchAppointmentParams) bindIDPatient(rawData []string, hasKey bool, f
 	// Required: false
 	// AllowEmptyValue: false
 	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchAppointmentParams()
 		return nil
 	}
 
@@ -147,6 +209,7 @@ func (o *SearchAppointmentParams) bindIDProfessional(rawData []string, hasKey bo
 	// Required: false
 	// AllowEmptyValue: false
 	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchAppointmentParams()
 		return nil
 	}
 
@@ -169,6 +232,7 @@ func (o *SearchAppointmentParams) bindIdspecialty(rawData []string, hasKey bool,
 	// Required: false
 	// AllowEmptyValue: false
 	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchAppointmentParams()
 		return nil
 	}
 
@@ -191,15 +255,16 @@ func (o *SearchAppointmentParams) bindStartDate(rawData []string, hasKey bool, f
 	// Required: false
 	// AllowEmptyValue: false
 	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchAppointmentParams()
 		return nil
 	}
 
-	// Format: date
-	value, err := formats.Parse("date", raw)
+	// Format: date-time
+	value, err := formats.Parse("date-time", raw)
 	if err != nil {
-		return errors.InvalidType("startDate", "query", "strfmt.Date", raw)
+		return errors.InvalidType("startDate", "query", "strfmt.DateTime", raw)
 	}
-	o.StartDate = (value.(*strfmt.Date))
+	o.StartDate = (value.(*strfmt.DateTime))
 
 	if err := o.validateStartDate(formats); err != nil {
 		return err
@@ -211,43 +276,7 @@ func (o *SearchAppointmentParams) bindStartDate(rawData []string, hasKey bool, f
 // validateStartDate carries on validations for parameter StartDate
 func (o *SearchAppointmentParams) validateStartDate(formats strfmt.Registry) error {
 
-	if err := validate.FormatOf("startDate", "query", "date", o.StartDate.String(), formats); err != nil {
-		return err
-	}
-	return nil
-}
-
-// bindStartFinish binds and validates parameter StartFinish from query.
-func (o *SearchAppointmentParams) bindStartFinish(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: false
-	// AllowEmptyValue: false
-	if raw == "" { // empty values pass all other validations
-		return nil
-	}
-
-	// Format: date
-	value, err := formats.Parse("date", raw)
-	if err != nil {
-		return errors.InvalidType("startFinish", "query", "strfmt.Date", raw)
-	}
-	o.StartFinish = (value.(*strfmt.Date))
-
-	if err := o.validateStartFinish(formats); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// validateStartFinish carries on validations for parameter StartFinish
-func (o *SearchAppointmentParams) validateStartFinish(formats strfmt.Registry) error {
-
-	if err := validate.FormatOf("startFinish", "query", "date", o.StartFinish.String(), formats); err != nil {
+	if err := validate.FormatOf("startDate", "query", "date-time", o.StartDate.String(), formats); err != nil {
 		return err
 	}
 	return nil

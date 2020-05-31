@@ -136,7 +136,7 @@ definitions:
         type: integer
       date:
         type: string
-        format: date
+        format: date-time
       status:
         $ref: "#/definitions/appointmentStatus"
       patient:
@@ -558,24 +558,29 @@ paths:
           type: integer
           in: query
           description: id of the patient
+          default: 0
         - name: idProfessional
           type: integer
           in: query
           description: id of the professional
+          default: 0
         - name: startDate
           type: string
-          format: date
+          format: date-time
           in: query
           description: start date for appointment
-        - name: startFinish
+          default: "2000-01-01T00:00:00Z"
+        - name: finishDate
           type: string
-          format: date
+          format: date-time
           in: query
           description: finish date for appointment
+          default: "2040-01-01T00:00:00Z"
         - name: idspecialty
           type: integer
           in: query
           description: id for specialty
+          default: 0
         - name: status
           in: query
           type: string

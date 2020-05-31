@@ -22,10 +22,20 @@ import (
 // with the default values initialized.
 func NewSearchAppointmentParams() *SearchAppointmentParams {
 	var (
-		statusDefault = string("avaiable")
+		finishDateDefault     = strfmt.DateTime("2040-01-01T00:00:00Z")
+		iDPatientDefault      = int64(0)
+		iDProfessionalDefault = int64(0)
+		idspecialtyDefault    = int64(0)
+		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault         = string("avaiable")
 	)
 	return &SearchAppointmentParams{
-		Status: &statusDefault,
+		FinishDate:     &finishDateDefault,
+		IDPatient:      &iDPatientDefault,
+		IDProfessional: &iDProfessionalDefault,
+		Idspecialty:    &idspecialtyDefault,
+		StartDate:      &startDateDefault,
+		Status:         &statusDefault,
 
 		timeout: cr.DefaultTimeout,
 	}
@@ -35,10 +45,20 @@ func NewSearchAppointmentParams() *SearchAppointmentParams {
 // with the default values initialized, and the ability to set a timeout on a request
 func NewSearchAppointmentParamsWithTimeout(timeout time.Duration) *SearchAppointmentParams {
 	var (
-		statusDefault = string("avaiable")
+		finishDateDefault     = strfmt.DateTime("2040-01-01T00:00:00Z")
+		iDPatientDefault      = int64(0)
+		iDProfessionalDefault = int64(0)
+		idspecialtyDefault    = int64(0)
+		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault         = string("avaiable")
 	)
 	return &SearchAppointmentParams{
-		Status: &statusDefault,
+		FinishDate:     &finishDateDefault,
+		IDPatient:      &iDPatientDefault,
+		IDProfessional: &iDProfessionalDefault,
+		Idspecialty:    &idspecialtyDefault,
+		StartDate:      &startDateDefault,
+		Status:         &statusDefault,
 
 		timeout: timeout,
 	}
@@ -48,10 +68,20 @@ func NewSearchAppointmentParamsWithTimeout(timeout time.Duration) *SearchAppoint
 // with the default values initialized, and the ability to set a context for a request
 func NewSearchAppointmentParamsWithContext(ctx context.Context) *SearchAppointmentParams {
 	var (
-		statusDefault = string("avaiable")
+		finishDateDefault     = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idPatientDefault      = int64(0)
+		idProfessionalDefault = int64(0)
+		idspecialtyDefault    = int64(0)
+		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault         = string("avaiable")
 	)
 	return &SearchAppointmentParams{
-		Status: &statusDefault,
+		FinishDate:     &finishDateDefault,
+		IDPatient:      &idPatientDefault,
+		IDProfessional: &idProfessionalDefault,
+		Idspecialty:    &idspecialtyDefault,
+		StartDate:      &startDateDefault,
+		Status:         &statusDefault,
 
 		Context: ctx,
 	}
@@ -61,11 +91,21 @@ func NewSearchAppointmentParamsWithContext(ctx context.Context) *SearchAppointme
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewSearchAppointmentParamsWithHTTPClient(client *http.Client) *SearchAppointmentParams {
 	var (
-		statusDefault = string("avaiable")
+		finishDateDefault     = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idPatientDefault      = int64(0)
+		idProfessionalDefault = int64(0)
+		idspecialtyDefault    = int64(0)
+		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault         = string("avaiable")
 	)
 	return &SearchAppointmentParams{
-		Status:     &statusDefault,
-		HTTPClient: client,
+		FinishDate:     &finishDateDefault,
+		IDPatient:      &idPatientDefault,
+		IDProfessional: &idProfessionalDefault,
+		Idspecialty:    &idspecialtyDefault,
+		StartDate:      &startDateDefault,
+		Status:         &statusDefault,
+		HTTPClient:     client,
 	}
 }
 
@@ -74,6 +114,11 @@ for the search appointment operation typically these are written to a http.Reque
 */
 type SearchAppointmentParams struct {
 
+	/*FinishDate
+	  finish date for appointment
+
+	*/
+	FinishDate *strfmt.DateTime
 	/*IDPatient
 	  id of the patient
 
@@ -93,12 +138,7 @@ type SearchAppointmentParams struct {
 	  start date for appointment
 
 	*/
-	StartDate *strfmt.Date
-	/*StartFinish
-	  finish date for appointment
-
-	*/
-	StartFinish *strfmt.Date
+	StartDate *strfmt.DateTime
 	/*Status
 	  appointment status
 
@@ -143,6 +183,17 @@ func (o *SearchAppointmentParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithFinishDate adds the finishDate to the search appointment params
+func (o *SearchAppointmentParams) WithFinishDate(finishDate *strfmt.DateTime) *SearchAppointmentParams {
+	o.SetFinishDate(finishDate)
+	return o
+}
+
+// SetFinishDate adds the finishDate to the search appointment params
+func (o *SearchAppointmentParams) SetFinishDate(finishDate *strfmt.DateTime) {
+	o.FinishDate = finishDate
+}
+
 // WithIDPatient adds the iDPatient to the search appointment params
 func (o *SearchAppointmentParams) WithIDPatient(iDPatient *int64) *SearchAppointmentParams {
 	o.SetIDPatient(iDPatient)
@@ -177,25 +228,14 @@ func (o *SearchAppointmentParams) SetIdspecialty(idspecialty *int64) {
 }
 
 // WithStartDate adds the startDate to the search appointment params
-func (o *SearchAppointmentParams) WithStartDate(startDate *strfmt.Date) *SearchAppointmentParams {
+func (o *SearchAppointmentParams) WithStartDate(startDate *strfmt.DateTime) *SearchAppointmentParams {
 	o.SetStartDate(startDate)
 	return o
 }
 
 // SetStartDate adds the startDate to the search appointment params
-func (o *SearchAppointmentParams) SetStartDate(startDate *strfmt.Date) {
+func (o *SearchAppointmentParams) SetStartDate(startDate *strfmt.DateTime) {
 	o.StartDate = startDate
-}
-
-// WithStartFinish adds the startFinish to the search appointment params
-func (o *SearchAppointmentParams) WithStartFinish(startFinish *strfmt.Date) *SearchAppointmentParams {
-	o.SetStartFinish(startFinish)
-	return o
-}
-
-// SetStartFinish adds the startFinish to the search appointment params
-func (o *SearchAppointmentParams) SetStartFinish(startFinish *strfmt.Date) {
-	o.StartFinish = startFinish
 }
 
 // WithStatus adds the status to the search appointment params
@@ -216,6 +256,22 @@ func (o *SearchAppointmentParams) WriteToRequest(r runtime.ClientRequest, reg st
 		return err
 	}
 	var res []error
+
+	if o.FinishDate != nil {
+
+		// query param finishDate
+		var qrFinishDate strfmt.DateTime
+		if o.FinishDate != nil {
+			qrFinishDate = *o.FinishDate
+		}
+		qFinishDate := qrFinishDate.String()
+		if qFinishDate != "" {
+			if err := r.SetQueryParam("finishDate", qFinishDate); err != nil {
+				return err
+			}
+		}
+
+	}
 
 	if o.IDPatient != nil {
 
@@ -268,29 +324,13 @@ func (o *SearchAppointmentParams) WriteToRequest(r runtime.ClientRequest, reg st
 	if o.StartDate != nil {
 
 		// query param startDate
-		var qrStartDate strfmt.Date
+		var qrStartDate strfmt.DateTime
 		if o.StartDate != nil {
 			qrStartDate = *o.StartDate
 		}
 		qStartDate := qrStartDate.String()
 		if qStartDate != "" {
 			if err := r.SetQueryParam("startDate", qStartDate); err != nil {
-				return err
-			}
-		}
-
-	}
-
-	if o.StartFinish != nil {
-
-		// query param startFinish
-		var qrStartFinish strfmt.Date
-		if o.StartFinish != nil {
-			qrStartFinish = *o.StartFinish
-		}
-		qStartFinish := qrStartFinish.String()
-		if qStartFinish != "" {
-			if err := r.SetQueryParam("startFinish", qStartFinish); err != nil {
 				return err
 			}
 		}
