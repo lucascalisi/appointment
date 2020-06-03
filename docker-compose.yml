@@ -1,9 +1,11 @@
 version: '3'
 
 services:
-
-  mysql-development:
-    image: mysql:8.0.17
+  db_appointment:
+    image: mysql
+    restart: always
+    networks:
+      - backend
     environment:
       MYSQL_ROOT_PASSWORD: prueba12345
       MYSQL_DATABASE: appointment
@@ -11,3 +13,23 @@ services:
       - "3306:3306"
     volumes:
       - ./data:/var/lib/mysql
+ 
+  appointment:
+    restart: always
+    ports:
+      - "8080:8080"
+    image: appointment
+    networks:
+      - backend 
+    environment:
+      DBUSER: root
+      DBNAME: appointment
+      DBPASSWORD: prueba12345
+      DBHOST: db_appointment
+      DBPORT: 3306
+    depends_on:
+      - db_appointment
+
+networks:
+  backend:
+    driver: "bridge"

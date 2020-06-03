@@ -4,6 +4,8 @@ import "time"
 
 type ProfessionalStorage interface {
 	getProfessionalByID(professionalID int64) (Professional, error)
+	getProfessionalAppointments(professionalID int64) ([]Appointment, error)
+	getProfessionalAppointment(professionalID int64, appointmentID int64) (Appointment, error)
 }
 
 type Professional struct {

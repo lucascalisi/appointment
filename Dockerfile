@@ -1,16 +1,20 @@
 FROM golang:latest
 
-EXPOSE 8080
-ENV HOST=0.0.0.0
-ENV PORT=8080
-
 ENV DBPASSWORD=
 ENV DBNAME=
 ENV DBHOST=localhost
 ENV DBPORT=3306
 ENV DBUSER=root
 
-WORKDIR /src
+WORKDIR /go/src/github.com/appointment
 COPY . .
-#ADD http/cmd/a-p-pointment-backend-server/main /app/main
-#CMD ["/app/main",  "--host", "0.0.0.0", "--port", "8080"]
+RUN go get golang.org/x/net/netutil
+RUN go get github.com/go-openapi/strfmt
+RUN go get github.com/go-openapi/swag
+RUN go get github.com/go-openapi/validate
+RUN go get github.com/docker/go-units
+RUN go get github.com/go-sql-driver/mysql
+RUN go get github.com/jessevdk/go-flags
+
+RUN go build ./http/cmd/healthy-calendar-server/main.go
+CMD ["./main",  "--host", "0.0.0.0", "--port", "8080"]

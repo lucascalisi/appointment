@@ -4,6 +4,7 @@ import "time"
 
 type PatientStorage interface {
 	getPatientByID(patientID int64) (Patient, error)
+	getPatientAppointments(patientID int64) ([]Appointment, error)
 }
 
 type Patient struct {

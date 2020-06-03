@@ -29,3 +29,55 @@ func getPatient(stg patientGetter) patients.GetPatientbyIDHandlerFunc {
 		})
 	}
 }
+
+type patientAppointmentGetter interface {
+	GetPatientAppointments(patientID int64) ([]rec.Appointment, error)
+}
+
+func getPatientAppointments(stg patientAppointmentGetter) patients.GetAppointmentsByPatientHandlerFunc {
+	return func(params patients.GetAppointmentsByPatientParams) middleware.Responder {
+		appointmentsSearched, err := stg.GetPatientAppointments(params.ID)
+
+		if err != nil {
+			return patients.NewGetAppointmentsByPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		result := []*models.Appointment{}
+		for _, a := range appointmentsSearched {
+			thisAppointment := a
+			thisPatient := a.Patient
+			thisProfessional := a.Professional
+
+			date := strfmt.DateTime(thisAppointment.Date)
+			birthDayPatient := strfmt.Date(thisPatient.BirthDay)
+			birthDayProfessional := strfmt.Date(thisProfessional.BirthDay)
+
+			professional := models.Professional{
+				ID:           thisProfessional.ID,
+				Dni:          &thisProfessional.DNI,
+				Name:         &thisProfessional.Name,
+				DoctorNumber: &thisProfessional.DoctorNumber,
+				BirthDay:     &birthDayProfessional,
+			}
+
+			patient := models.Patient{
+				ID:       thisPatient.ID,
+				Dni:      &thisPatient.DNI,
+				Name:     &thisPatient.Name,
+				Sex:      &thisPatient.Sex,
+				BirthDay: &birthDayPatient,
+			}
+
+			appointment := models.Appointment{
+				ID:           thisAppointment.ID,
+				Date:         &date,
+				Status:       models.AppointmentStatus(thisAppointment.Status),
+				Patient:      &patient,
+				Professional: &professional,
+			}
+			result = append(result, &appointment)
+		}
+
+		return patients.NewGetAppointmentsByPatientOK().WithPayload(result)
+	}
+}
