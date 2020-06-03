@@ -89,3 +89,55 @@ func (db *DB) GetProfessionalAppointment(id int64, idAppointment int64) (rec.App
 	}
 	return result, nil
 }
+
+func (db *DB) GetProfessionalSpecialties(id int64) ([]rec.Specialty, error) {
+	query := `SELECT s.id, s.name, sd.id, sd.name 
+	FROM specialityDetailsByProfessional sdp
+	INNER JOIN specialityDetails sd
+		ON sdp.idSpecialityDetail = sd.id
+	INNER JOIN specialties s
+		ON s.id = sd.idSpeciality
+	WHERE sdp.idProfessional = ?`
+
+	rows, err := db.Query(query, id)
+	if err != nil {
+		return nil, rec.NewStorageError(fmt.Sprintf("could not get specialties by professional: %v", err))
+	}
+
+	defer rows.Close()
+
+	specialties := []rec.Specialty{}
+	specialtiDetails := []rec.SpecialtyDetails{}
+	sNext := rec.Specialty{}
+	s := rec.Specialty{}
+	for rows.Next() {
+		var idSubCategory *int64
+		var subCategory *string
+
+		err := rows.Scan(&sNext.ID, &sNext.Category, &idSubCategory, &subCategory)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not search specialties: %v", err),
+			}
+		}
+
+		if s.ID != sNext.ID {
+			s.SubCategories = specialtiDetails
+			specialties = append(specialties, s)
+			specialtiDetails = nil
+		}
+
+		if idSubCategory != nil {
+			specialtiDetails = append(specialtiDetails, rec.SpecialtyDetails{
+				ID:          *idSubCategory,
+				SubCategory: *subCategory,
+			})
+		}
+		s = sNext
+	}
+
+	s.SubCategories = specialtiDetails
+	specialties = append(specialties, s)
+
+	return specialties, nil
+}

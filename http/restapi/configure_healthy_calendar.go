@@ -82,11 +82,7 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 
 	api.ProfessionalsGetProfessionalbyIDHandler = getProfessional(db)
 
-	if api.ProfessionalsGetSpecialtiesByProfessionalHandler == nil {
-		api.ProfessionalsGetSpecialtiesByProfessionalHandler = professionals.GetSpecialtiesByProfessionalHandlerFunc(func(params professionals.GetSpecialtiesByProfessionalParams) middleware.Responder {
-			return middleware.NotImplemented("operation professionals.GetSpecialtiesByProfessional has not yet been implemented")
-		})
-	}
+	api.ProfessionalsGetSpecialtiesByProfessionalHandler = getProfessionalSpecialties(db)
 
 	api.LoginLoginHandler = authenticate(db)
 

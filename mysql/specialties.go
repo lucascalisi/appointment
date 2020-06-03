@@ -20,7 +20,7 @@ func (db *DB) Search(params rec.SpecialtySearcher) ([]rec.Specialty, error) {
 
 	rows, err := db.Query(query, params.Category, params.SubCategory)
 	if err != nil {
-		return nil, rec.NewStorageError(fmt.Sprintf("could not get user info  : %v", err))
+		return nil, rec.NewStorageError(fmt.Sprintf("could not search specialties info  : %v", err))
 	}
 
 	defer rows.Close()
@@ -36,7 +36,7 @@ func (db *DB) Search(params rec.SpecialtySearcher) ([]rec.Specialty, error) {
 		err := rows.Scan(&sNext.ID, &sNext.Category, &idSubCategory, &subCategory)
 		if err != nil {
 			return nil, rec.StorageError{
-				Description: fmt.Sprintf("could not scan user: %v", err),
+				Description: fmt.Sprintf("could not search specialties: %v", err),
 			}
 		}
 

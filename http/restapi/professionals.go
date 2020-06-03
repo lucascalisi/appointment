@@ -131,3 +131,34 @@ func getProfessionalAppointment(stg professionalAppointmentGetter) professionals
 		return professionals.NewGetAppointmentByProfessionalAppointmentIDOK().WithPayload(&result)
 	}
 }
+
+type professionalSpecialtiessGetter interface {
+	GetProfessionalSpecialties(professionalID int64) ([]rec.Specialty, error)
+}
+
+func getProfessionalSpecialties(stg professionalSpecialtiessGetter) professionals.GetSpecialtiesByProfessionalHandlerFunc {
+	return func(params professionals.GetSpecialtiesByProfessionalParams) middleware.Responder {
+		specialtiesGetted, err := stg.GetProfessionalSpecialties(params.ID)
+		if err != nil {
+			return professionals.NewGetSpecialtiesByProfessionalInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		result := []*models.Specialty{}
+		for _, s := range specialtiesGetted {
+			thisSpecialty := s
+			for _, sd := range thisSpecialty.SubCategories {
+				thisSpecialtyDetail := sd
+				var subCategory string = ""
+				if thisSpecialty.Category != thisSpecialtyDetail.SubCategory {
+					subCategory = thisSpecialtyDetail.SubCategory
+				}
+				result = append(result, &models.Specialty{
+					ID:          thisSpecialtyDetail.ID,
+					Category:    &thisSpecialty.Category,
+					SubCategory: subCategory,
+				})
+			}
+		}
+		return professionals.NewGetSpecialtiesByProfessionalOK().WithPayload(result)
+	}
+}
