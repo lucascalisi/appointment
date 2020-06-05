@@ -153,12 +153,48 @@ func getProfessionalSpecialties(stg professionalSpecialtiessGetter) professional
 					subCategory = thisSpecialtyDetail.SubCategory
 				}
 				result = append(result, &models.Specialty{
-					ID:          thisSpecialtyDetail.ID,
-					Category:    &thisSpecialty.Category,
-					SubCategory: subCategory,
+					ID:            thisSpecialty.ID,
+					Category:      &thisSpecialty.Category,
+					IDSubcategory: thisSpecialtyDetail.ID,
+					SubCategory:   subCategory,
 				})
 			}
 		}
 		return professionals.NewGetSpecialtiesByProfessionalOK().WithPayload(result)
+	}
+}
+
+type professionalSchedulesGetter interface {
+	GetProfessionalSchedule(professionalID int64, specialtyID int64) ([]rec.Scheduler, error)
+}
+
+func getProfessionalSchedules(stg professionalSchedulesGetter) professionals.GetProfesionalScheduleBySpecialtyHandlerFunc {
+	return func(params professionals.GetProfesionalScheduleBySpecialtyParams) middleware.Responder {
+		schedulesGetted, err := stg.GetProfessionalSchedule(params.ID, params.IDSpecialty)
+		if err != nil {
+			return professionals.NewGetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		result := []*models.Schedule{}
+		for _, s := range schedulesGetted {
+			thisSchedule := s
+			items := []*models.ScheduleItems0{}
+			for _, si := range s.Schedule {
+				thisScheduleItem := si
+				items = append(items, &models.ScheduleItems0{
+					Day:        thisScheduleItem.Day,
+					FinishTime: rec.ScheduledTimeToString(thisScheduleItem.FinishTime),
+					StartTime:  rec.ScheduledTimeToString(thisScheduleItem.StartTime),
+				})
+			}
+			result = append(result, &models.Schedule{
+				ID:       thisSchedule.ID,
+				Month:    &thisSchedule.Month,
+				Year:     &thisSchedule.Year,
+				Schedule: items,
+			})
+
+		}
+		return professionals.NewGetProfesionalScheduleBySpecialtyOK().WithPayload(result)
 	}
 }

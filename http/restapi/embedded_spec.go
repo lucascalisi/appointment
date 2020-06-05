@@ -857,15 +857,16 @@ func init() {
             "type": "object",
             "properties": {
               "day": {
-                "type": "integer"
+                "type": "integer",
+                "pattern": "[1-7]"
               },
               "finishTime": {
-                "type": "integer",
-                "default": 18
+                "type": "string",
+                "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
               },
               "startTime": {
-                "type": "integer",
-                "default": 9
+                "type": "string",
+                "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
               }
             }
           }
@@ -885,6 +886,9 @@ func init() {
           "type": "string"
         },
         "id": {
+          "type": "integer"
+        },
+        "idSubcategory": {
           "type": "integer"
         },
         "subCategory": {
@@ -1760,15 +1764,16 @@ func init() {
             "type": "object",
             "properties": {
               "day": {
-                "type": "integer"
+                "type": "integer",
+                "pattern": "[1-7]"
               },
               "finishTime": {
-                "type": "integer",
-                "default": 18
+                "type": "string",
+                "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
               },
               "startTime": {
-                "type": "integer",
-                "default": 9
+                "type": "string",
+                "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
               }
             }
           }
@@ -1788,6 +1793,9 @@ func init() {
           "type": "string"
         },
         "id": {
+          "type": "integer"
+        },
+        "idSubcategory": {
           "type": "integer"
         },
         "subCategory": {

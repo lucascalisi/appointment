@@ -7,6 +7,7 @@ type ProfessionalStorage interface {
 	getProfessionalAppointments(professionalID int64) ([]Appointment, error)
 	getProfessionalAppointment(professionalID int64, appointmentID int64) (Appointment, error)
 	getProfessionalSpecialties(professionalID int64) ([]Specialty, error)
+	getProfessionalSchedule(professionalID int64, specialtyID int64) ([]Scheduler, error)
 }
 
 type Professional struct {

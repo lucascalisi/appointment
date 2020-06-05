@@ -32,9 +32,10 @@ func searchSpecialties(stg specialtiesSearcher) specialties.SearchSpecialtyHandl
 					subCategory = thisSpecialtyDetail.SubCategory
 				}
 				result = append(result, &models.Specialty{
-					ID:          thisSpecialtyDetail.ID,
-					Category:    &thisSpecialty.Category,
-					SubCategory: subCategory,
+					ID:            thisSpecialty.ID,
+					Category:      &thisSpecialty.Category,
+					IDSubcategory: thisSpecialtyDetail.ID,
+					SubCategory:   subCategory,
 				})
 			}
 		}

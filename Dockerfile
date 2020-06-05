@@ -1,11 +1,5 @@
 FROM golang:latest
 
-ENV DBPASSWORD=
-ENV DBNAME=
-ENV DBHOST=localhost
-ENV DBPORT=3306
-ENV DBUSER=root
-
 WORKDIR /go/src/github.com/appointment
 COPY . .
 RUN go get golang.org/x/net/netutil

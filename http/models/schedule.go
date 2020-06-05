@@ -123,17 +123,76 @@ func (m *Schedule) UnmarshalBinary(b []byte) error {
 type ScheduleItems0 struct {
 
 	// day
+	// Pattern: [1-7]
 	Day int64 `json:"day,omitempty"`
 
 	// finish time
-	FinishTime *int64 `json:"finishTime,omitempty"`
+	// Pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+	FinishTime string `json:"finishTime,omitempty"`
 
 	// start time
-	StartTime *int64 `json:"startTime,omitempty"`
+	// Pattern: ^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$
+	StartTime string `json:"startTime,omitempty"`
 }
 
 // Validate validates this schedule items0
 func (m *ScheduleItems0) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDay(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFinishTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateStartTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *ScheduleItems0) validateDay(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Day) { // not required
+		return nil
+	}
+
+	if err := validate.Pattern("day", "body", string(m.Day), `[1-7]`); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ScheduleItems0) validateFinishTime(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.FinishTime) { // not required
+		return nil
+	}
+
+	if err := validate.Pattern("finishTime", "body", string(m.FinishTime), `^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$`); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ScheduleItems0) validateStartTime(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.StartTime) { // not required
+		return nil
+	}
+
+	if err := validate.Pattern("startTime", "body", string(m.StartTime), `^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$`); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -73,16 +73,26 @@ CREATE TABLE `specialityDetailsByProfessional` (
 	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser)
 );
 
-CREATE TABLE `professionalsSchedule` (
+CREATE TABLE `professionalsScheduleBySpecialty` (
 	`id` int(11)  NOT NULL AUTO_INCREMENT,
 	`idProfessional` int(11)  NOT NULL,
+	`idSpeciality` int(11)  NOT NULL,
 	`year` int(11) NOT NULL,
 	`month` int(11) NOT NULL,
-	`dayOfWeek` int(11) NOT NULL,
-	`startTime` time NOT NULL,
-	`finishTime` time NOT NULL,
 	 PRIMARY KEY (`id`),
-	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser)
+	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser),
+	 FOREIGN KEY (idSpeciality) REFERENCES specialties(id)
+);
+
+CREATE TABLE `professionalsScheduleItemsBySpecialty` (
+	`id` int(11)  NOT NULL AUTO_INCREMENT,
+	`idSchedule` int(11) NOT NULL,
+	`dayOfWeek` int(11) NOT NULL,
+	`startTime` varchar(5) NOT NULL,
+	`finishTime` varchar(5) NOT NULL,
+	 PRIMARY KEY (`id`),
+	 FOREIGN KEY (idSchedule) REFERENCES professionalsScheduleBySpecialty(id),
+	 CONSTRAINT item_unique UNIQUE(idSchedule, dayOfWeek, startTime, finishTime)
 );
 
 CREATE TABLE `appointments` (

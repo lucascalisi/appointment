@@ -141,3 +141,79 @@ func (db *DB) GetProfessionalSpecialties(id int64) ([]rec.Specialty, error) {
 
 	return specialties, nil
 }
+
+func (db *DB) GetProfessionalSchedule(id int64, idSpecialty int64) ([]rec.Scheduler, error) {
+	query := `SELECT s.id, s.idProfessional, s.idSpeciality, s.year, s.month
+	FROM professionalsScheduleBySpecialty s
+	WHERE idProfessional = ?
+	AND idSpeciality = ?`
+
+	rows, err := db.Query(query, id, idSpecialty)
+	if err != nil {
+		return nil, rec.NewStorageError(fmt.Sprintf("could not get schedules by professional: %v", err))
+	}
+
+	defer rows.Close()
+
+	schedulers := []rec.Scheduler{}
+	for rows.Next() {
+		s := rec.Scheduler{}
+		var idProfessional *int64
+		var idSpeciality *int64
+		err := rows.Scan(&s.ID, &idProfessional, &idSpeciality, &s.Year, &s.Month)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not get schedules: %v", err),
+			}
+		}
+
+		s.Schedule, err = db.GetSchedulerItemsByID(s.ID)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not get schedule items: %v", err),
+			}
+		}
+		schedulers = append(schedulers, s)
+	}
+
+	return schedulers, nil
+}
+
+func (db *DB) GetSchedulerItemsByID(id int64) ([]rec.ScheduleItems, error) {
+	query := `SELECT s.id, s.idSchedule, s.dayOfWeek, s.startTime, s.finishTime
+	FROM professionalsScheduleItemsBySpecialty s
+	WHERE idSchedule = ?`
+
+	rows, err := db.Query(query, id)
+	if err != nil {
+		return nil, rec.NewStorageError(fmt.Sprintf("could not get schedule items by id scheduler: %v", err))
+	}
+
+	defer rows.Close()
+
+	items := []rec.ScheduleItems{}
+	for rows.Next() {
+		item := rec.ScheduleItems{}
+		var idSchedule *int64
+		var startTime *string
+		var finishTime *string
+		err := rows.Scan(&item.ID, &idSchedule, &item.Day, &startTime, &finishTime)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not make schedule item: %v", err),
+			}
+		}
+
+		if startTime != nil {
+			item.StartTime = rec.StringToscheduledTime(*startTime)
+		}
+
+		if finishTime != nil {
+			item.FinishTime = rec.StringToscheduledTime(*finishTime)
+		}
+
+		items = append(items, item)
+	}
+
+	return items, nil
+}

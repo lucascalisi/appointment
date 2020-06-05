@@ -24,6 +24,9 @@ type Specialty struct {
 	// id
 	ID int64 `json:"id,omitempty"`
 
+	// id subcategory
+	IDSubcategory int64 `json:"idSubcategory,omitempty"`
+
 	// sub category
 	SubCategory string `json:"subCategory,omitempty"`
 }
