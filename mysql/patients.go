@@ -59,3 +59,30 @@ func (db *DB) GetPatientAppointments(id int64) ([]rec.Appointment, error) {
 
 	return result, nil
 }
+
+func (db *DB) RequestAppointment(patientID int64, appointmentID int64) error {
+	_, err := db.Exec(`UPDATE appointments SET idPatient = ?, status = 'pending' WHERE id = ?`, patientID, appointmentID)
+	if err != nil {
+		return rec.NewStorageError(fmt.Sprintf("could not request appointment  : %v", err))
+	}
+
+	return nil
+}
+
+func (db *DB) ConfirmAppointment(patientID int64, appointmentID int64) error {
+	_, err := db.Exec(`UPDATE appointments SET status = 'confirmed' WHERE id = ? AND idPatient = ?`, appointmentID, patientID)
+	if err != nil {
+		return rec.NewStorageError(fmt.Sprintf("could not confirm appointment  : %v", err))
+	}
+
+	return nil
+}
+
+func (db *DB) CancelAppointment(patientID int64, appointmentID int64) error {
+	_, err := db.Exec(`UPDATE appointments SET status = 'avaiable', idPatient = NULL WHERE id = ? AND idPatient = ?`, appointmentID, patientID)
+	if err != nil {
+		return rec.NewStorageError(fmt.Sprintf("could not cancel appointment  : %v", err))
+	}
+
+	return nil
+}

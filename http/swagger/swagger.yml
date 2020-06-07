@@ -268,10 +268,6 @@ paths:
       responses:
         200:
           description: appoint for a patient
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/appointment"
         500:
           description: internal server error
           schema:
@@ -298,10 +294,6 @@ paths:
       responses:
         200:
           description: appoint for a patient
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/appointment"
         500:
           description: internal server error
           schema:
@@ -328,10 +320,6 @@ paths:
       responses:
         200:
           description: appoint for a patient
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/appointment"
         500:
           description: internal server error
           schema:

@@ -255,13 +255,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",
@@ -298,13 +292,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",
@@ -341,13 +329,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",
@@ -1162,13 +1144,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",
@@ -1205,13 +1181,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",
@@ -1248,13 +1218,7 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "appoint for a patient",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/appointment"
-              }
-            }
+            "description": "appoint for a patient"
           },
           "500": {
             "description": "internal server error",

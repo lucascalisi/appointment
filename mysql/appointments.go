@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 
 	rec "github.com/appointment/resources"
@@ -53,4 +54,30 @@ func (db *DB) SearchAppointment(params rec.AppointmentSearch) ([]rec.Appointment
 	}
 
 	return result, nil
+}
+
+func (db *DB) GetAppointmentById(id int64) (rec.Appointment, error) {
+	a := rec.Appointment{}
+	var idProfessional *int64
+	var idPatient *int64
+	err := db.QueryRow("SELECT id, idProfessional, status, date, idPatient FROM appointments WHERe id = ?", id).Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return rec.Appointment{}, rec.NotFound
+		}
+		return rec.Appointment{}, rec.NewStorageError(fmt.Sprintf("could not get user info  : %v", err))
+	}
+
+	if idProfessional != nil {
+		a.Professional, err = db.GetProfessionalByID(*idProfessional)
+		if err != nil {
+			return rec.Appointment{}, err
+		}
+	}
+
+	if idPatient != nil {
+		a.Patient, _ = db.GetPatientByID(*idPatient)
+	}
+
+	return a, nil
 }

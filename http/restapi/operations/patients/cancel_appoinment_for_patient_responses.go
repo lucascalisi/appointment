@@ -21,11 +21,6 @@ const CancelAppoinmentForPatientOKCode int = 200
 swagger:response cancelAppoinmentForPatientOK
 */
 type CancelAppoinmentForPatientOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload []*models.Appointment `json:"body,omitempty"`
 }
 
 // NewCancelAppoinmentForPatientOK creates CancelAppoinmentForPatientOK with default headers values
@@ -34,30 +29,12 @@ func NewCancelAppoinmentForPatientOK() *CancelAppoinmentForPatientOK {
 	return &CancelAppoinmentForPatientOK{}
 }
 
-// WithPayload adds the payload to the cancel appoinment for patient o k response
-func (o *CancelAppoinmentForPatientOK) WithPayload(payload []*models.Appointment) *CancelAppoinmentForPatientOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the cancel appoinment for patient o k response
-func (o *CancelAppoinmentForPatientOK) SetPayload(payload []*models.Appointment) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *CancelAppoinmentForPatientOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(200)
-	payload := o.Payload
-	if payload == nil {
-		// return empty array
-		payload = make([]*models.Appointment, 0, 50)
-	}
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
 
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
+	rw.WriteHeader(200)
 }
 
 // CancelAppoinmentForPatientInternalServerErrorCode is the HTTP code returned for type CancelAppoinmentForPatientInternalServerError

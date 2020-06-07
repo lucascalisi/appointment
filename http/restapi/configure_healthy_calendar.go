@@ -13,7 +13,6 @@ import (
 
 	"github.com/appointment/config"
 	"github.com/appointment/http/restapi/operations"
-	"github.com/appointment/http/restapi/operations/patients"
 	"github.com/appointment/http/restapi/operations/professionals"
 	"github.com/appointment/mysql"
 )
@@ -51,21 +50,18 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 
 	mysql.SetConnectionParameters(db)
 
-	if api.PatientsCancelAppoinmentForPatientHandler == nil {
-		api.PatientsCancelAppoinmentForPatientHandler = patients.CancelAppoinmentForPatientHandlerFunc(func(params patients.CancelAppoinmentForPatientParams) middleware.Responder {
-			return middleware.NotImplemented("operation patients.CancelAppoinmentForPatient has not yet been implemented")
-		})
-	}
+	api.PatientsCancelAppoinmentForPatientHandler = patientCancelAppointment(db)
+
 	if api.ProfessionalsCancelAppointmentProfessionalHandler == nil {
 		api.ProfessionalsCancelAppointmentProfessionalHandler = professionals.CancelAppointmentProfessionalHandlerFunc(func(params professionals.CancelAppointmentProfessionalParams) middleware.Responder {
 			return middleware.NotImplemented("operation professionals.CancelAppointmentProfessional has not yet been implemented")
 		})
 	}
-	if api.PatientsConfirmAppointmentForPatientHandler == nil {
-		api.PatientsConfirmAppointmentForPatientHandler = patients.ConfirmAppointmentForPatientHandlerFunc(func(params patients.ConfirmAppointmentForPatientParams) middleware.Responder {
-			return middleware.NotImplemented("operation patients.ConfirmAppointmentForPatient has not yet been implemented")
-		})
-	}
+
+	api.PatientsConfirmAppointmentForPatientHandler = patientConfirmAppointment(db)
+
+	api.PatientsRequestAppointmentForPatientHandler = patientRequestAppointment(db)
+
 	api.ProfessionalsGetAppointmentByProfessionalAppointmentIDHandler = getProfessionalAppointment(db)
 
 	api.PatientsGetAppointmentsByPatientHandler = getPatientAppointments(db)

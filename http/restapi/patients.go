@@ -1,6 +1,8 @@
 package restapi
 
 import (
+	"time"
+
 	"github.com/appointment/http/models"
 	"github.com/appointment/http/restapi/operations/patients"
 	rec "github.com/appointment/resources"
@@ -79,5 +81,82 @@ func getPatientAppointments(stg patientAppointmentGetter) patients.GetAppointmen
 		}
 
 		return patients.NewGetAppointmentsByPatientOK().WithPayload(result)
+	}
+}
+
+type patientAppointmentRequester interface {
+	RequestAppointment(patientID int64, appointmentID int64) error
+	GetAppointmentById(id int64) (rec.Appointment, error)
+}
+
+func patientRequestAppointment(stg patientAppointmentRequester) patients.RequestAppointmentForPatientHandlerFunc {
+	return func(params patients.RequestAppointmentForPatientParams) middleware.Responder {
+		appointment, err := stg.GetAppointmentById(params.IDAppointment)
+		if err != nil {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		if appointment.Status == "avaiable" {
+			err := stg.RequestAppointment(params.ID, params.IDAppointment)
+			if err != nil {
+				return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+			}
+			return patients.NewRequestAppointmentForPatientOK()
+		}
+
+		return patients.NewRequestAppointmentForPatientInternalServerError()
+	}
+}
+
+type patientAppointmentConfirmer interface {
+	ConfirmAppointment(patientID int64, appointmentID int64) error
+	GetAppointmentById(id int64) (rec.Appointment, error)
+}
+
+func patientConfirmAppointment(stg patientAppointmentConfirmer) patients.ConfirmAppointmentForPatientHandlerFunc {
+	return func(params patients.ConfirmAppointmentForPatientParams) middleware.Responder {
+		appointment, err := stg.GetAppointmentById(params.IDAppointment)
+		if err != nil {
+			return patients.NewConfirmAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		if appointment.Patient.ID == params.ID && appointment.Status == "pending" {
+			timeNow := time.Now()
+			diff := appointment.Date.Sub(timeNow)
+			if diff.Hours() > 0 && diff.Hours() < 24 {
+				err := stg.ConfirmAppointment(appointment.Patient.ID, appointment.ID)
+				if err != nil {
+					return patients.NewConfirmAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+				}
+				return patients.NewConfirmAppointmentForPatientOK()
+			}
+		}
+
+		return patients.NewConfirmAppointmentForPatientInternalServerError()
+	}
+}
+
+type patientAppointmentCanceler interface {
+	CancelAppointment(patientID int64, appointmentID int64) error
+	GetAppointmentById(id int64) (rec.Appointment, error)
+}
+
+func patientCancelAppointment(stg patientAppointmentCanceler) patients.CancelAppoinmentForPatientHandlerFunc {
+	return func(params patients.CancelAppoinmentForPatientParams) middleware.Responder {
+		appointment, err := stg.GetAppointmentById(params.IDAppointment)
+		if err != nil {
+			return patients.NewCancelAppoinmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		if appointment.Patient.ID == params.ID && appointment.Status == "pending" {
+			err := stg.CancelAppointment(params.ID, params.IDAppointment)
+			if err != nil {
+				return patients.NewCancelAppoinmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+			}
+			return patients.NewCancelAppoinmentForPatientOK()
+		}
+
+		return patients.NewCancelAppoinmentForPatientInternalServerError()
+
 	}
 }

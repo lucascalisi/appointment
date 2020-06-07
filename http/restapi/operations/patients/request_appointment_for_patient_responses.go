@@ -21,11 +21,6 @@ const RequestAppointmentForPatientOKCode int = 200
 swagger:response requestAppointmentForPatientOK
 */
 type RequestAppointmentForPatientOK struct {
-
-	/*
-	  In: Body
-	*/
-	Payload []*models.Appointment `json:"body,omitempty"`
 }
 
 // NewRequestAppointmentForPatientOK creates RequestAppointmentForPatientOK with default headers values
@@ -34,30 +29,12 @@ func NewRequestAppointmentForPatientOK() *RequestAppointmentForPatientOK {
 	return &RequestAppointmentForPatientOK{}
 }
 
-// WithPayload adds the payload to the request appointment for patient o k response
-func (o *RequestAppointmentForPatientOK) WithPayload(payload []*models.Appointment) *RequestAppointmentForPatientOK {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the request appointment for patient o k response
-func (o *RequestAppointmentForPatientOK) SetPayload(payload []*models.Appointment) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *RequestAppointmentForPatientOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.WriteHeader(200)
-	payload := o.Payload
-	if payload == nil {
-		// return empty array
-		payload = make([]*models.Appointment, 0, 50)
-	}
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
 
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
+	rw.WriteHeader(200)
 }
 
 // RequestAppointmentForPatientInternalServerErrorCode is the HTTP code returned for type RequestAppointmentForPatientInternalServerError

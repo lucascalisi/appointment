@@ -54,19 +54,13 @@ func NewConfirmAppointmentForPatientOK() *ConfirmAppointmentForPatientOK {
 appoint for a patient
 */
 type ConfirmAppointmentForPatientOK struct {
-	Payload []*models.Appointment
 }
 
 func (o *ConfirmAppointmentForPatientOK) Error() string {
-	return fmt.Sprintf("[PUT /v1/patients/{id}/appointments/{idAppointment}/confirm][%d] confirmAppointmentForPatientOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /v1/patients/{id}/appointments/{idAppointment}/confirm][%d] confirmAppointmentForPatientOK ", 200)
 }
 
 func (o *ConfirmAppointmentForPatientOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
