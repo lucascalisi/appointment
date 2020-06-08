@@ -23,14 +23,21 @@ func (db *DB) Login(cred rec.LoginAuth) (rec.User, error) {
 	roles := []rec.Role{}
 	count := 0
 	for rows.Next() {
+		var roleDescription *string
 		count += 1
 		r := rec.Role{}
-		err := rows.Scan(&user.ID, &user.Email, &user.Status, &r.ID, &r.Name, &r.Description)
+		err := rows.Scan(&user.ID, &user.Email, &user.Status, &r.ID, &r.Name, &roleDescription)
 		if err != nil {
+			fmt.Println(err)
 			return rec.User{}, rec.StorageError{
 				Description: fmt.Sprintf("could not scan user: %v", err),
 			}
 		}
+
+		if roleDescription != nil {
+			r.Description = *roleDescription
+		}
+
 		roles = append(roles, r)
 	}
 
