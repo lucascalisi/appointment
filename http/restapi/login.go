@@ -1,6 +1,8 @@
 package restapi
 
 import (
+	"fmt"
+
 	"github.com/appointment/http/models"
 	"github.com/appointment/http/restapi/operations/login"
 	rec "github.com/appointment/resources"
@@ -14,6 +16,8 @@ type loginAutenticator interface {
 
 func authenticate(stg loginAutenticator) login.LoginHandlerFunc {
 	return func(params login.LoginParams) middleware.Responder {
+		fmt.Println(*params.Credentials.User)
+		fmt.Println(*params.Credentials.Password)
 		user, err := stg.Login(rec.LoginAuth{
 			User:     *params.Credentials.User,
 			Password: *params.Credentials.Password,
