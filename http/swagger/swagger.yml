@@ -146,6 +146,8 @@ definitions:
           $ref: "#/definitions/patient"
       professional:
           $ref: "#/definitions/professional"
+      specialty:
+          $ref: "#/definitions/specialty"
 
   appointmentStatus:
     type: string

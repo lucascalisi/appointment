@@ -7,6 +7,7 @@ type SpecialtySearcher struct {
 
 type SpecialtyStorage interface {
 	Search(SpecialtySearcher) ([]Specialty, error)
+	GetSpecialtyByDetail(id int64) (Specialty, error)
 }
 
 type Specialty struct {

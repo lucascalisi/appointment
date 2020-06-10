@@ -60,3 +60,36 @@ func (db *DB) Search(params rec.SpecialtySearcher) ([]rec.Specialty, error) {
 
 	return specialties, nil
 }
+
+func (db *DB) GetSpecialtyByDetail(id int64) (rec.Specialty, error) {
+	query := `SELECT s.id, s.name, sd.id, sd.name 
+	FROM specialityDetails sd
+	INNER JOIN specialties s
+		ON s.id = sd.idSpeciality
+	WHERE sd.id = ?`
+
+	var idSubCategory *int64
+	var subCategory *string
+	specialty := rec.Specialty{}
+
+	err := db.QueryRow(query, id).Scan(&specialty.ID, &specialty.Category, &idSubCategory, &subCategory)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(id)
+		return rec.Specialty{}, rec.NewStorageError(fmt.Sprintf("could not get specialties by details: %v", err))
+	}
+
+	specialtyDetail := rec.SpecialtyDetails{}
+	if idSubCategory != nil {
+		specialtyDetail.ID = *idSubCategory
+
+	}
+	if subCategory != nil {
+		specialtyDetail.SubCategory = *subCategory
+
+	}
+
+	specialty.SubCategories = append(specialty.SubCategories, specialtyDetail)
+
+	return specialty, nil
+}

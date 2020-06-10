@@ -21,4 +21,5 @@ type Appointment struct {
 	Status       string
 	Patient      Patient
 	Professional Professional
+	Specialty    Specialty
 }

@@ -711,6 +711,9 @@ func init() {
         "professional": {
           "$ref": "#/definitions/professional"
         },
+        "specialty": {
+          "$ref": "#/definitions/specialty"
+        },
         "status": {
           "$ref": "#/definitions/appointmentStatus"
         }
@@ -1599,6 +1602,9 @@ func init() {
         },
         "professional": {
           "$ref": "#/definitions/professional"
+        },
+        "specialty": {
+          "$ref": "#/definitions/specialty"
         },
         "status": {
           "$ref": "#/definitions/appointmentStatus"

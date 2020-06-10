@@ -101,7 +101,9 @@ CREATE TABLE `appointments` (
 	`status` varchar(50) NOT NULL,
 	`date` datetime NOT NULL,
 	`idPatient` int(11)  NULL,
+	`idSpecialityDetail` int(11) NOT NULL,
 	 PRIMARY KEY (`id`),
 	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser),
-	 FOREIGN KEY (idPatient) REFERENCES patients(idUser)
+	 FOREIGN KEY (idPatient) REFERENCES patients(idUser),
+	 FOREIGN KEY (idSpecialityDetail) REFERENCES specialityDetailsByProfessional(id)
 );

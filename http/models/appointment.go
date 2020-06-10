@@ -31,6 +31,9 @@ type Appointment struct {
 	// professional
 	Professional *Professional `json:"professional,omitempty"`
 
+	// specialty
+	Specialty *Specialty `json:"specialty,omitempty"`
+
 	// status
 	// Required: true
 	Status AppointmentStatus `json:"status"`
@@ -49,6 +52,10 @@ func (m *Appointment) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateProfessional(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSpecialty(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -103,6 +110,24 @@ func (m *Appointment) validateProfessional(formats strfmt.Registry) error {
 		if err := m.Professional.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("professional")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *Appointment) validateSpecialty(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Specialty) { // not required
+		return nil
+	}
+
+	if m.Specialty != nil {
+		if err := m.Specialty.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("specialty")
 			}
 			return err
 		}
