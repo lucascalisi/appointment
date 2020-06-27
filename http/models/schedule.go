@@ -123,7 +123,6 @@ func (m *Schedule) UnmarshalBinary(b []byte) error {
 type ScheduleItems0 struct {
 
 	// day
-	// Pattern: [1-7]
 	Day int64 `json:"day,omitempty"`
 
 	// finish time
@@ -139,10 +138,6 @@ type ScheduleItems0 struct {
 func (m *ScheduleItems0) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateDay(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateFinishTime(formats); err != nil {
 		res = append(res, err)
 	}
@@ -154,19 +149,6 @@ func (m *ScheduleItems0) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *ScheduleItems0) validateDay(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.Day) { // not required
-		return nil
-	}
-
-	if err := validate.Pattern("day", "body", string(m.Day), `[1-7]`); err != nil {
-		return err
-	}
-
 	return nil
 }
 

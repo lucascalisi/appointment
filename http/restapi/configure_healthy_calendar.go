@@ -82,6 +82,8 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 
 	api.SpecialtiesSearchSpecialtyHandler = searchSpecialties(db)
 
+	api.ProfessionalsSetProfesionalScheduleBySpecialtyHandler = setProfessionalSchedules(db, cfg.AppointmentDuration)
+
 	api.ServerShutdown = func() {}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))

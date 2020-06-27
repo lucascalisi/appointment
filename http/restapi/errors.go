@@ -47,6 +47,30 @@ func newRestApiError(err error) *models.Error {
 			Code:        403,
 			Type:        "overlap appointment",
 		}
+	case rec.OutDatedAppointment:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "outdated appointment",
+		}
+	case rec.ProfessionalSamePatient:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "professional and patient are the same",
+		}
+	case rec.EditBeforeDate:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "selected date before now",
+		}
+	case rec.EditMoreThanTwoMonths:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "selected date is more than two months",
+		}
 	}
 	switch err.(type) {
 	default:

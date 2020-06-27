@@ -83,9 +83,17 @@ func patientRequestAppointment(stg patientAppointmentRequester, appointmentDurat
 			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
 		}
 
+		if time.Now().After(appointment.Date) {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.OutDatedAppointment))
+		}
+
 		//check if requested appointment is avaiable
 		if appointment.Status != "avaiable" {
 			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.AppointmentNotAvaiable))
+		}
+
+		if appointment.Professional.ID == patient.ID {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.ProfessionalSamePatient))
 		}
 
 		appointments, err := stg.GetPatientAppointments(params.ID)
@@ -102,7 +110,6 @@ func patientRequestAppointment(stg patientAppointmentRequester, appointmentDurat
 					return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.MoreThanSpecialtyAppointment))
 				}
 			}
-
 			//check overlap appointments for patient
 			thisAppFinishTime := time.Time(thisAppointment.Date).Add(addAppointmentDuration)
 			requestedAppointmentFinishTime := time.Time(appointment.Date).Add(addAppointmentDuration)

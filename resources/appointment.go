@@ -13,6 +13,7 @@ type AppointmentSearch struct {
 
 type AppointmentStorage interface {
 	SearchAppointment(AppointmentSearch) ([]Appointment, error)
+	CreateAppointment(Appointment) error
 }
 
 type Appointment struct {

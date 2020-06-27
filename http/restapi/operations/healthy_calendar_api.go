@@ -88,6 +88,9 @@ func NewHealthyCalendarAPI(spec *loads.Document) *HealthyCalendarAPI {
 		SpecialtiesSearchSpecialtyHandler: specialties.SearchSpecialtyHandlerFunc(func(params specialties.SearchSpecialtyParams) middleware.Responder {
 			return middleware.NotImplemented("operation SpecialtiesSearchSpecialty has not yet been implemented")
 		}),
+		ProfessionalsSetProfesionalScheduleBySpecialtyHandler: professionals.SetProfesionalScheduleBySpecialtyHandlerFunc(func(params professionals.SetProfesionalScheduleBySpecialtyParams) middleware.Responder {
+			return middleware.NotImplemented("operation ProfessionalsSetProfesionalScheduleBySpecialty has not yet been implemented")
+		}),
 	}
 }
 
@@ -149,6 +152,9 @@ type HealthyCalendarAPI struct {
 	AppointmentsSearchAppointmentHandler appointments.SearchAppointmentHandler
 	// SpecialtiesSearchSpecialtyHandler sets the operation handler for the search specialty operation
 	SpecialtiesSearchSpecialtyHandler specialties.SearchSpecialtyHandler
+	// ProfessionalsSetProfesionalScheduleBySpecialtyHandler sets the operation handler for the set profesional schedule by specialty operation
+	ProfessionalsSetProfesionalScheduleBySpecialtyHandler professionals.SetProfesionalScheduleBySpecialtyHandler
+
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
@@ -269,6 +275,10 @@ func (o *HealthyCalendarAPI) Validate() error {
 
 	if o.SpecialtiesSearchSpecialtyHandler == nil {
 		unregistered = append(unregistered, "specialties.SearchSpecialtyHandler")
+	}
+
+	if o.ProfessionalsSetProfesionalScheduleBySpecialtyHandler == nil {
+		unregistered = append(unregistered, "professionals.SetProfesionalScheduleBySpecialtyHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -443,6 +453,11 @@ func (o *HealthyCalendarAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/v1/specialties"] = specialties.NewSearchSpecialty(o.context, o.SpecialtiesSearchSpecialtyHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v1/professionals/{id}/specialties/{idSpecialty}/schedule"] = professionals.NewSetProfesionalScheduleBySpecialty(o.context, o.ProfessionalsSetProfesionalScheduleBySpecialtyHandler)
 
 }
 

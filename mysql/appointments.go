@@ -71,7 +71,7 @@ func (db *DB) GetAppointmentById(id int64) (rec.Appointment, error) {
 	var idProfessional *int64
 	var idPatient *int64
 	var idSpecialityDetail *int64
-	err := db.QueryRow("SELECT id, idProfessional, status, date, idPatient FROM appointments WHERE id = ?", id).Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient, &idSpecialityDetail)
+	err := db.QueryRow("SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail FROM appointments WHERE id = ?", id).Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient, &idSpecialityDetail)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return rec.Appointment{}, rec.NotFound
@@ -87,12 +87,27 @@ func (db *DB) GetAppointmentById(id int64) (rec.Appointment, error) {
 	}
 
 	if idPatient != nil {
-		a.Patient, _ = db.GetPatientByID(*idPatient)
+		a.Patient, err = db.GetPatientByID(*idPatient)
+		if err != nil {
+			return rec.Appointment{}, err
+		}
 	}
 
 	if idSpecialityDetail != nil {
-		a.Specialty, _ = db.GetSpecialtyByDetail(*idSpecialityDetail)
+		a.Specialty, err = db.GetSpecialtyByDetail(*idSpecialityDetail)
+		if err != nil {
+			return rec.Appointment{}, err
+		}
 	}
 
 	return a, nil
+}
+
+func (db *DB) CreateAppointment(a rec.Appointment) error {
+	_, err := db.Exec("INSERT INTO appointments (idProfessional, status, date, idPatient, idSpecialityDetail) VALUES(?, ?, ?, ?, ?)", a.Professional.ID, "avaiable", a.Date, nil, a.Specialty.SubCategories[0].ID)
+	if err != nil {
+		return rec.NewStorageError(fmt.Sprintf("could not insert appoint: %v", err))
+	}
+
+	return nil
 }

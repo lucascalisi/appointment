@@ -142,6 +142,33 @@ func (db *DB) GetProfessionalSpecialties(id int64) ([]rec.Specialty, error) {
 	return specialties, nil
 }
 
+func (db *DB) GetProfessionalSpecialty(id int64, idSpeciality int64) (rec.Specialty, error) {
+	query := `SELECT s.id, s.name, sd.id, sd.name 
+	FROM specialityDetailsByProfessional sdp
+	INNER JOIN specialityDetails sd
+		ON sdp.idSpecialityDetail = sd.id
+	INNER JOIN specialties s
+		ON s.id = sd.idSpeciality
+	WHERE sdp.idProfessional = ?
+	and sd.id = ?`
+
+	specialty := rec.Specialty{}
+	specialtyDetails := []rec.SpecialtyDetails{}
+	var idSubCategory *int64
+	var subCategory *string
+	err := db.QueryRow(query, id, idSpeciality).Scan(&specialty.ID, &specialty.Category, &idSubCategory, &subCategory)
+	if err != nil {
+		return rec.Specialty{}, rec.NewStorageError(fmt.Sprintf("could not get specialty by professional: %v", err))
+	}
+
+	specialty.SubCategories = append(specialtyDetails, rec.SpecialtyDetails{
+		ID:          *idSubCategory,
+		SubCategory: *subCategory,
+	})
+
+	return specialty, nil
+}
+
 func (db *DB) GetProfessionalSchedule(id int64, idSpecialty int64) ([]rec.Scheduler, error) {
 	query := `SELECT s.id, s.idProfessional, s.idSpeciality, s.year, s.month
 	FROM professionalsScheduleBySpecialty s
@@ -179,6 +206,34 @@ func (db *DB) GetProfessionalSchedule(id int64, idSpecialty int64) ([]rec.Schedu
 	return schedulers, nil
 }
 
+func (db *DB) SetProfessionalSchedule(id int64, idSpecialty int64, scheduler rec.Scheduler) (rec.Scheduler, error) {
+	result, err := db.Exec("INSERT INTO professionalsScheduleBySpecialty (idProfessional, idSpeciality, year, month) VALUES(?, ?, ?, ?)", id, idSpecialty, scheduler.Year, scheduler.Month)
+	if err != nil {
+		return rec.Scheduler{}, rec.NewStorageError(fmt.Sprintf("could not insert schedule: %v", err))
+	}
+
+	lastId, err := result.LastInsertId()
+	if err != nil {
+		return rec.Scheduler{}, rec.NewStorageError(fmt.Sprintf("could not get inserted schedulerid: %v", err))
+	}
+
+	for _, schedulerItem := range scheduler.Schedule {
+		_, err := db.Exec("INSERT INTO professionalsScheduleItemsBySpecialty (idSchedule, dayOfWeek, startTime, finishTime) VALUES(?, ?, ?, ?)", lastId, schedulerItem.Day, schedulerItem.StartTime, schedulerItem.FinishTime)
+		if err != nil {
+			return rec.Scheduler{}, rec.NewStorageError(fmt.Sprintf("could not insert schedule item: %v", err))
+		}
+	}
+
+	schedulerItems, _ := db.GetSchedulerItemsByID(lastId)
+
+	return rec.Scheduler{
+		ID:       lastId,
+		Year:     scheduler.Year,
+		Month:    scheduler.Month,
+		Schedule: schedulerItems,
+	}, nil
+}
+
 func (db *DB) GetSchedulerItemsByID(id int64) ([]rec.ScheduleItems, error) {
 	query := `SELECT s.id, s.idSchedule, s.dayOfWeek, s.startTime, s.finishTime
 	FROM professionalsScheduleItemsBySpecialty s
@@ -205,15 +260,38 @@ func (db *DB) GetSchedulerItemsByID(id int64) ([]rec.ScheduleItems, error) {
 		}
 
 		if startTime != nil {
-			item.StartTime = rec.StringToscheduledTime(*startTime)
+			item.StartTime = *startTime
 		}
 
 		if finishTime != nil {
-			item.FinishTime = rec.StringToscheduledTime(*finishTime)
+			item.FinishTime = *finishTime
 		}
 
 		items = append(items, item)
 	}
 
 	return items, nil
+}
+
+func (db *DB) GetProfessionalScheduleByID(idSchedule int64) (rec.Scheduler, error) {
+	query := `SELECT s.id, s.idProfessional, s.idSpeciality, s.year, s.month
+	FROM professionalsScheduleBySpecialty s
+	WHERE id = ?`
+
+	var idSpeciality *int64
+	var idProfessional *int64
+	s := rec.Scheduler{}
+	err := db.QueryRow(query, idSchedule).Scan(&s.ID, &idProfessional, &idSpeciality, &s.Year, &s.Month)
+	if err != nil {
+		return rec.Scheduler{}, rec.NewStorageError(fmt.Sprintf("could not get schedules id by professional: %v", err))
+	}
+
+	s.Schedule, err = db.GetSchedulerItemsByID(s.ID)
+	if err != nil {
+		return rec.Scheduler{}, rec.StorageError{
+			Description: fmt.Sprintf("could not get schedule items: %v", err),
+		}
+	}
+
+	return s, nil
 }

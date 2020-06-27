@@ -1,10 +1,6 @@
 package resources
 
-import (
-	"fmt"
-	"strconv"
-	"strings"
-)
+import "fmt"
 
 type Scheduler struct {
 	ID       int64
@@ -16,8 +12,8 @@ type Scheduler struct {
 type ScheduleItems struct {
 	ID         int64
 	Day        int64
-	StartTime  ScheduleTime
-	FinishTime ScheduleTime
+	StartTime  string
+	FinishTime string
 }
 
 type ScheduleTime struct {
@@ -27,14 +23,4 @@ type ScheduleTime struct {
 
 func ScheduledTimeToString(time ScheduleTime) string {
 	return fmt.Sprintf("%d:%d", time.Hour, time.Minute)
-}
-
-func StringToscheduledTime(time string) ScheduleTime {
-	parsedTime := strings.Split(time, ":")
-	hour, _ := strconv.Atoi(parsedTime[0])
-	minutes, _ := strconv.Atoi(parsedTime[1])
-	return ScheduleTime{
-		Hour:   int64(hour),
-		Minute: int64(minutes),
-	}
 }

@@ -21,7 +21,7 @@ func (db *DB) GetPatientByID(id int64) (rec.Patient, error) {
 }
 
 func (db *DB) GetPatientAppointments(id int64) ([]rec.Appointment, error) {
-	query := `SELECT id, idProfessional, status, date, idPatient
+	query := `SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
 	FROM appointments
 	WHERE idPatient = ?`
 
@@ -37,9 +37,10 @@ func (db *DB) GetPatientAppointments(id int64) ([]rec.Appointment, error) {
 	result := []rec.Appointment{}
 	var idProfessional *int64
 	var idPatient *int64
+	var idSpecialityDetail *int64
 	for rows.Next() {
 		a := rec.Appointment{}
-		err := rows.Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient)
+		err := rows.Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient, &idSpecialityDetail)
 		if err != nil {
 			return nil, rec.StorageError{
 				Description: fmt.Sprintf("could not search appointments: %v", err),
@@ -48,6 +49,13 @@ func (db *DB) GetPatientAppointments(id int64) ([]rec.Appointment, error) {
 
 		if idProfessional != nil {
 			a.Professional, err = db.GetProfessionalByID(*idProfessional)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if idSpecialityDetail != nil {
+			a.Specialty, err = db.GetSpecialtyByDetail(*idSpecialityDetail)
 			if err != nil {
 				return nil, err
 			}

@@ -629,7 +629,6 @@ func init() {
           {
             "name": "schedule",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/schedule"
             }
@@ -851,8 +850,7 @@ func init() {
             "type": "object",
             "properties": {
               "day": {
-                "type": "integer",
-                "pattern": "[1-7]"
+                "type": "integer"
               },
               "finishTime": {
                 "type": "string",
@@ -1530,7 +1528,6 @@ func init() {
           {
             "name": "schedule",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/schedule"
             }
@@ -1752,8 +1749,7 @@ func init() {
             "type": "object",
             "properties": {
               "day": {
-                "type": "integer",
-                "pattern": "[1-7]"
+                "type": "integer"
               },
               "finishTime": {
                 "type": "string",

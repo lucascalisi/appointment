@@ -82,7 +82,7 @@ CREATE TABLE `professionalsScheduleBySpecialty` (
 	`month` int(11) NOT NULL,
 	 PRIMARY KEY (`id`),
 	 FOREIGN KEY (idProfessional) REFERENCES professionals(idUser),
-	 FOREIGN KEY (idSpeciality) REFERENCES specialties(id)
+	 FOREIGN KEY (idSpeciality) REFERENCES specialityDetailsByProfessional(id)
 );
 
 CREATE TABLE `professionalsScheduleItemsBySpecialty` (
