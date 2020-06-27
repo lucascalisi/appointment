@@ -32,6 +32,7 @@ CREATE TABLE `patients` (
 	`name` varchar(500) NOT NULL,
 	`sex` varchar(20) NOT NULL,
 	`birthDay` datetime NULL,
+	`paymentStatus` boolean NOT NULL,
 	 PRIMARY KEY (`idUser`),
 	 FOREIGN KEY (idUser) REFERENCES users(id)
 );

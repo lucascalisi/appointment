@@ -18,15 +18,7 @@ func getProfessional(stg professionalGetter) professionals.GetProfessionalbyIDHa
 		if err != nil {
 			return professionals.NewGetProfessionalbyIDInternalServerError().WithPayload(newRestApiError(err))
 		}
-
-		birthDay := strfmt.Date(result.BirthDay)
-		return professionals.NewGetProfessionalbyIDOK().WithPayload(&models.Professional{
-			ID:           result.ID,
-			Dni:          &result.DNI,
-			Name:         &result.Name,
-			DoctorNumber: &result.DoctorNumber,
-			BirthDay:     &birthDay,
-		})
+		return professionals.NewGetProfessionalbyIDOK().WithPayload(dbProfessionalToModelProfessional(result))
 	}
 }
 
@@ -49,31 +41,16 @@ func getProfessionalAppointments(stg professionalAppointmentsGetter) professiona
 			thisProfessional := a.Professional
 
 			date := strfmt.DateTime(thisAppointment.Date)
-			birthDayPatient := strfmt.Date(thisPatient.BirthDay)
-			birthDayProfessional := strfmt.Date(thisProfessional.BirthDay)
 
-			professional := models.Professional{
-				ID:           thisProfessional.ID,
-				Dni:          &thisProfessional.DNI,
-				Name:         &thisProfessional.Name,
-				DoctorNumber: &thisProfessional.DoctorNumber,
-				BirthDay:     &birthDayProfessional,
-			}
-
-			patient := models.Patient{
-				ID:       thisPatient.ID,
-				Dni:      &thisPatient.DNI,
-				Name:     &thisPatient.Name,
-				Sex:      &thisPatient.Sex,
-				BirthDay: &birthDayPatient,
-			}
+			professional := dbProfessionalToModelProfessional(thisProfessional)
+			patient := dbPatientToModelPatient(thisPatient)
 
 			appointment := models.Appointment{
 				ID:           thisAppointment.ID,
 				Date:         &date,
 				Status:       models.AppointmentStatus(thisAppointment.Status),
-				Patient:      &patient,
-				Professional: &professional,
+				Patient:      patient,
+				Professional: professional,
 			}
 			result = append(result, &appointment)
 		}
@@ -101,31 +78,15 @@ func getProfessionalAppointment(stg professionalAppointmentGetter) professionals
 		thisProfessional := thisAppointment.Professional
 
 		date := strfmt.DateTime(thisAppointment.Date)
-		birthDayPatient := strfmt.Date(thisPatient.BirthDay)
-		birthDayProfessional := strfmt.Date(thisProfessional.BirthDay)
-
-		professional := models.Professional{
-			ID:           thisProfessional.ID,
-			Dni:          &thisProfessional.DNI,
-			Name:         &thisProfessional.Name,
-			DoctorNumber: &thisProfessional.DoctorNumber,
-			BirthDay:     &birthDayProfessional,
-		}
-
-		patient := models.Patient{
-			ID:       thisPatient.ID,
-			Dni:      &thisPatient.DNI,
-			Name:     &thisPatient.Name,
-			Sex:      &thisPatient.Sex,
-			BirthDay: &birthDayPatient,
-		}
+		professional := dbProfessionalToModelProfessional(thisProfessional)
+		patient := dbPatientToModelPatient(thisPatient)
 
 		result = models.Appointment{
 			ID:           thisAppointment.ID,
 			Date:         &date,
 			Status:       models.AppointmentStatus(thisAppointment.Status),
-			Patient:      &patient,
-			Professional: &professional,
+			Patient:      patient,
+			Professional: professional,
 		}
 
 		return professionals.NewGetAppointmentByProfessionalAppointmentIDOK().WithPayload(&result)
@@ -196,5 +157,16 @@ func getProfessionalSchedules(stg professionalSchedulesGetter) professionals.Get
 
 		}
 		return professionals.NewGetProfesionalScheduleBySpecialtyOK().WithPayload(result)
+	}
+}
+
+func dbProfessionalToModelProfessional(professional rec.Professional) *models.Professional {
+	birthDay := strfmt.Date(professional.BirthDay)
+	return &models.Professional{
+		ID:           professional.ID,
+		Dni:          &professional.DNI,
+		Name:         &professional.Name,
+		DoctorNumber: &professional.DoctorNumber,
+		BirthDay:     &birthDay,
 	}
 }

@@ -21,14 +21,7 @@ func getPatient(stg patientGetter) patients.GetPatientbyIDHandlerFunc {
 			return patients.NewGetPatientbyIDInternalServerError().WithPayload(newRestApiError(err))
 		}
 
-		birthDay := strfmt.Date(result.BirthDay)
-		return patients.NewGetPatientbyIDOK().WithPayload(&models.Patient{
-			ID:       result.ID,
-			Dni:      &result.DNI,
-			Name:     &result.Name,
-			Sex:      &result.Sex,
-			BirthDay: &birthDay,
-		})
+		return patients.NewGetPatientbyIDOK().WithPayload(dbPatientToModelPatient(result))
 	}
 }
 
@@ -51,31 +44,15 @@ func getPatientAppointments(stg patientAppointmentGetter) patients.GetAppointmen
 			thisProfessional := a.Professional
 
 			date := strfmt.DateTime(thisAppointment.Date)
-			birthDayPatient := strfmt.Date(thisPatient.BirthDay)
-			birthDayProfessional := strfmt.Date(thisProfessional.BirthDay)
-
-			professional := models.Professional{
-				ID:           thisProfessional.ID,
-				Dni:          &thisProfessional.DNI,
-				Name:         &thisProfessional.Name,
-				DoctorNumber: &thisProfessional.DoctorNumber,
-				BirthDay:     &birthDayProfessional,
-			}
-
-			patient := models.Patient{
-				ID:       thisPatient.ID,
-				Dni:      &thisPatient.DNI,
-				Name:     &thisPatient.Name,
-				Sex:      &thisPatient.Sex,
-				BirthDay: &birthDayPatient,
-			}
+			professional := dbProfessionalToModelProfessional(thisProfessional)
+			patient := dbPatientToModelPatient(thisPatient)
 
 			appointment := models.Appointment{
 				ID:           thisAppointment.ID,
 				Date:         &date,
 				Status:       models.AppointmentStatus(thisAppointment.Status),
-				Patient:      &patient,
-				Professional: &professional,
+				Patient:      patient,
+				Professional: professional,
 			}
 			result = append(result, &appointment)
 		}
@@ -87,24 +64,58 @@ func getPatientAppointments(stg patientAppointmentGetter) patients.GetAppointmen
 type patientAppointmentRequester interface {
 	RequestAppointment(patientID int64, appointmentID int64) error
 	GetAppointmentById(id int64) (rec.Appointment, error)
+	GetPatientAppointments(patientID int64) ([]rec.Appointment, error)
+	GetPatientByID(patientID int64) (rec.Patient, error)
 }
 
-func patientRequestAppointment(stg patientAppointmentRequester) patients.RequestAppointmentForPatientHandlerFunc {
+func patientRequestAppointment(stg patientAppointmentRequester, appointmentDuration int) patients.RequestAppointmentForPatientHandlerFunc {
 	return func(params patients.RequestAppointmentForPatientParams) middleware.Responder {
+		patient, err := stg.GetPatientByID(params.ID)
+		if err != nil {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+		if !patient.PaymentStatus {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.PatientNotPaymentOK))
+		}
+
 		appointment, err := stg.GetAppointmentById(params.IDAppointment)
 		if err != nil {
 			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
 		}
 
-		if appointment.Status == "avaiable" {
-			err := stg.RequestAppointment(params.ID, params.IDAppointment)
-			if err != nil {
-				return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
-			}
-			return patients.NewRequestAppointmentForPatientOK()
+		//check if requested appointment is avaiable
+		if appointment.Status != "avaiable" {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.AppointmentNotAvaiable))
 		}
 
-		return patients.NewRequestAppointmentForPatientInternalServerError()
+		appointments, err := stg.GetPatientAppointments(params.ID)
+		if err != nil {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		addAppointmentDuration := time.Duration(appointmentDuration) * time.Minute
+		for _, a := range appointments {
+			thisAppointment := a
+			//check if patient request two appointments for the same specialty in the same day
+			if thisAppointment.Date.Day() == appointment.Date.Day() && thisAppointment.Date.Month() == appointment.Date.Month() && thisAppointment.Date.Year() == appointment.Date.Year() {
+				if thisAppointment.Specialty.SubCategories[0].ID == appointment.Specialty.SubCategories[0].ID {
+					return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.MoreThanSpecialtyAppointment))
+				}
+			}
+
+			//check overlap appointments for patient
+			thisAppFinishTime := time.Time(thisAppointment.Date).Add(addAppointmentDuration)
+			requestedAppointmentFinishTime := time.Time(appointment.Date).Add(addAppointmentDuration)
+			if (thisAppointment.Date.After(requestedAppointmentFinishTime) && appointment.Date.After(thisAppFinishTime)) || (thisAppointment.Date == appointment.Date) {
+				return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.OverlapAppointment))
+			}
+		}
+
+		err = stg.RequestAppointment(params.ID, params.IDAppointment)
+		if err != nil {
+			return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))
+		}
+		return patients.NewRequestAppointmentForPatientOK()
 	}
 }
 
@@ -158,5 +169,17 @@ func patientCancelAppointment(stg patientAppointmentCanceler) patients.CancelApp
 
 		return patients.NewCancelAppoinmentForPatientInternalServerError()
 
+	}
+}
+
+func dbPatientToModelPatient(patient rec.Patient) *models.Patient {
+	birthDay := strfmt.Date(patient.BirthDay)
+	return &models.Patient{
+		ID:            patient.ID,
+		Dni:           &patient.DNI,
+		Name:          &patient.Name,
+		Sex:           &patient.Sex,
+		BirthDay:      &birthDay,
+		PaymentStatus: patient.PaymentStatus,
 	}
 }

@@ -331,6 +331,12 @@ func init() {
           "200": {
             "description": "appoint for a patient"
           },
+          "403": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "500": {
             "description": "internal server error",
             "schema": {
@@ -767,6 +773,9 @@ func init() {
         },
         "name": {
           "type": "string"
+        },
+        "paymentStatus": {
+          "type": "boolean"
         },
         "sex": {
           "type": "string",
@@ -1223,6 +1232,12 @@ func init() {
           "200": {
             "description": "appoint for a patient"
           },
+          "403": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "500": {
             "description": "internal server error",
             "schema": {
@@ -1659,6 +1674,9 @@ func init() {
         },
         "name": {
           "type": "string"
+        },
+        "paymentStatus": {
+          "type": "boolean"
         },
         "sex": {
           "type": "string",

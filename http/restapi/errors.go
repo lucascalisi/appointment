@@ -23,8 +23,31 @@ func newRestApiError(err error) *models.Error {
 			Code:        404,
 			Type:        "not found",
 		}
+	case rec.PatientNotPaymentOK:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "patient has not payment ok",
+		}
+	case rec.AppointmentNotAvaiable:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "appointment not avaiable",
+		}
+	case rec.MoreThanSpecialtyAppointment:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "could not have two appointments with the same specialty in the same day",
+		}
+	case rec.OverlapAppointment:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "overlap appointment",
+		}
 	}
-
 	switch err.(type) {
 	default:
 		result.Code = 500

@@ -54,5 +54,8 @@ func stackTrace() []uintptr {
 }
 
 var UnauthorizedUser error = fmt.Errorf("user or password incorrect")
-
+var PatientNotPaymentOK error = fmt.Errorf("patient has not payment status ok")
+var AppointmentNotAvaiable error = fmt.Errorf("the requested appointment is not avaiable")
+var MoreThanSpecialtyAppointment error = fmt.Errorf("could not have two appointments with the same specialty in the same day")
+var OverlapAppointment error = fmt.Errorf("not could get two overlap appointments")
 var NotFound error = fmt.Errorf("not found")

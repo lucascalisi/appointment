@@ -60,7 +60,7 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 
 	api.PatientsConfirmAppointmentForPatientHandler = patientConfirmAppointment(db)
 
-	api.PatientsRequestAppointmentForPatientHandler = patientRequestAppointment(db)
+	api.PatientsRequestAppointmentForPatientHandler = patientRequestAppointment(db, cfg.AppointmentDuration)
 
 	api.ProfessionalsGetAppointmentByProfessionalAppointmentIDHandler = getProfessionalAppointment(db)
 
@@ -81,12 +81,6 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 	api.AppointmentsSearchAppointmentHandler = searchAppointments(db)
 
 	api.SpecialtiesSearchSpecialtyHandler = searchSpecialties(db)
-
-	if api.ProfessionalsSetProfesionalScheduleBySpecialtyHandler == nil {
-		api.ProfessionalsSetProfesionalScheduleBySpecialtyHandler = professionals.SetProfesionalScheduleBySpecialtyHandlerFunc(func(params professionals.SetProfesionalScheduleBySpecialtyParams) middleware.Responder {
-			return middleware.NotImplemented("operation professionals.SetProfesionalScheduleBySpecialty has not yet been implemented")
-		})
-	}
 
 	api.ServerShutdown = func() {}
 

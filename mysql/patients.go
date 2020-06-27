@@ -9,7 +9,7 @@ import (
 
 func (db *DB) GetPatientByID(id int64) (rec.Patient, error) {
 	result := rec.Patient{}
-	err := db.QueryRow("SELECT idUser, dni, name, sex, birthDay FROM patients WHERe idUser = ?", id).Scan(&result.ID, &result.DNI, &result.Name, &result.Sex, &result.BirthDay)
+	err := db.QueryRow("SELECT idUser, dni, name, sex, birthDay, paymentStatus FROM patients WHERe idUser = ?", id).Scan(&result.ID, &result.DNI, &result.Name, &result.Sex, &result.BirthDay, &result.PaymentStatus)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return rec.Patient{}, rec.NotFound

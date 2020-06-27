@@ -67,6 +67,8 @@ definitions:
       birthDay:
         type: string
         format: date
+      paymentStatus:
+        type: boolean
 
   professional:
     type: object
@@ -297,6 +299,10 @@ paths:
         200:
           description: appoint for a patient
         500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+        403:
           description: internal server error
           schema:
             $ref: "#/definitions/error"

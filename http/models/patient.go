@@ -35,6 +35,9 @@ type Patient struct {
 	// Required: true
 	Name *string `json:"name"`
 
+	// payment status
+	PaymentStatus bool `json:"paymentStatus,omitempty"`
+
 	// sex
 	// Required: true
 	// Enum: [masculino femenino]

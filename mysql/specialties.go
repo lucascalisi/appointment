@@ -74,8 +74,6 @@ func (db *DB) GetSpecialtyByDetail(id int64) (rec.Specialty, error) {
 
 	err := db.QueryRow(query, id).Scan(&specialty.ID, &specialty.Category, &idSubCategory, &subCategory)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println(id)
 		return rec.Specialty{}, rec.NewStorageError(fmt.Sprintf("could not get specialties by details: %v", err))
 	}
 

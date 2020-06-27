@@ -8,6 +8,7 @@ import (
 )
 
 func (db *DB) SearchAppointment(params rec.AppointmentSearch) ([]rec.Appointment, error) {
+	fmt.Println(params.IDSpecialty)
 	query := `SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
 	FROM appointments
 	WHERE (idProfessional = ?
@@ -69,7 +70,8 @@ func (db *DB) GetAppointmentById(id int64) (rec.Appointment, error) {
 	a := rec.Appointment{}
 	var idProfessional *int64
 	var idPatient *int64
-	err := db.QueryRow("SELECT id, idProfessional, status, date, idPatient FROM appointments WHERe id = ?", id).Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient)
+	var idSpecialityDetail *int64
+	err := db.QueryRow("SELECT id, idProfessional, status, date, idPatient FROM appointments WHERE id = ?", id).Scan(&a.ID, &idProfessional, &a.Status, &a.Date, &idPatient, &idSpecialityDetail)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return rec.Appointment{}, rec.NotFound
@@ -86,6 +88,10 @@ func (db *DB) GetAppointmentById(id int64) (rec.Appointment, error) {
 
 	if idPatient != nil {
 		a.Patient, _ = db.GetPatientByID(*idPatient)
+	}
+
+	if idSpecialityDetail != nil {
+		a.Specialty, _ = db.GetSpecialtyByDetail(*idSpecialityDetail)
 	}
 
 	return a, nil

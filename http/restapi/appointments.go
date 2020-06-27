@@ -40,24 +40,9 @@ func searchAppointments(stg appointmentSearcher) appointments.SearchAppointmentH
 			thisSpecialty := a.Specialty
 
 			date := strfmt.DateTime(thisAppointment.Date)
-			birthDayPatient := strfmt.Date(thisPatient.BirthDay)
-			birthDayProfessional := strfmt.Date(thisProfessional.BirthDay)
 
-			professional := models.Professional{
-				ID:           thisProfessional.ID,
-				Dni:          &thisProfessional.DNI,
-				Name:         &thisProfessional.Name,
-				DoctorNumber: &thisProfessional.DoctorNumber,
-				BirthDay:     &birthDayProfessional,
-			}
-
-			patient := models.Patient{
-				ID:       thisPatient.ID,
-				Dni:      &thisPatient.DNI,
-				Name:     &thisPatient.Name,
-				Sex:      &thisPatient.Sex,
-				BirthDay: &birthDayPatient,
-			}
+			professional := dbProfessionalToModelProfessional(thisProfessional)
+			patient := dbPatientToModelPatient(thisPatient)
 
 			specialty := models.Specialty{
 				ID:            thisSpecialty.ID,
@@ -70,8 +55,8 @@ func searchAppointments(stg appointmentSearcher) appointments.SearchAppointmentH
 				ID:           thisAppointment.ID,
 				Date:         &date,
 				Status:       models.AppointmentStatus(thisAppointment.Status),
-				Patient:      &patient,
-				Professional: &professional,
+				Patient:      patient,
+				Professional: professional,
 				Specialty:    &specialty,
 			}
 			result = append(result, &appointment)

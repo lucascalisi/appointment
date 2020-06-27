@@ -15,8 +15,9 @@ type DBConfig struct {
 }
 
 type Config struct {
-	DBCfg DBConfig
-	Debug bool
+	DBCfg               DBConfig
+	Debug               bool
+	AppointmentDuration int
 }
 
 func GetConfig() (Config, error) {
@@ -28,8 +29,9 @@ func GetConfig() (Config, error) {
 		return Config{}, err
 	}
 	return Config{
-		DBCfg: dbCfg,
-		Debug: debugEnv,
+		DBCfg:               dbCfg,
+		AppointmentDuration: 30,
+		Debug:               debugEnv,
 	}, nil
 }
 

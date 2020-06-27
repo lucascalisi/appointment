@@ -37,6 +37,50 @@ func (o *RequestAppointmentForPatientOK) WriteResponse(rw http.ResponseWriter, p
 	rw.WriteHeader(200)
 }
 
+// RequestAppointmentForPatientForbiddenCode is the HTTP code returned for type RequestAppointmentForPatientForbidden
+const RequestAppointmentForPatientForbiddenCode int = 403
+
+/*RequestAppointmentForPatientForbidden internal server error
+
+swagger:response requestAppointmentForPatientForbidden
+*/
+type RequestAppointmentForPatientForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewRequestAppointmentForPatientForbidden creates RequestAppointmentForPatientForbidden with default headers values
+func NewRequestAppointmentForPatientForbidden() *RequestAppointmentForPatientForbidden {
+
+	return &RequestAppointmentForPatientForbidden{}
+}
+
+// WithPayload adds the payload to the request appointment for patient forbidden response
+func (o *RequestAppointmentForPatientForbidden) WithPayload(payload *models.Error) *RequestAppointmentForPatientForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the request appointment for patient forbidden response
+func (o *RequestAppointmentForPatientForbidden) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *RequestAppointmentForPatientForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 // RequestAppointmentForPatientInternalServerErrorCode is the HTTP code returned for type RequestAppointmentForPatientInternalServerError
 const RequestAppointmentForPatientInternalServerErrorCode int = 500
 

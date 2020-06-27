@@ -11,9 +11,10 @@ type PatientStorage interface {
 }
 
 type Patient struct {
-	ID       int64
-	Name     string
-	DNI      int64
-	Sex      string
-	BirthDay time.Time
+	ID            int64
+	Name          string
+	DNI           int64
+	Sex           string
+	BirthDay      time.Time
+	PaymentStatus bool
 }

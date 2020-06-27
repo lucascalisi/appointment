@@ -32,6 +32,13 @@ func (o *RequestAppointmentForPatientReader) ReadResponse(response runtime.Clien
 		}
 		return result, nil
 
+	case 403:
+		result := NewRequestAppointmentForPatientForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	case 500:
 		result := NewRequestAppointmentForPatientInternalServerError()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -61,6 +68,35 @@ func (o *RequestAppointmentForPatientOK) Error() string {
 }
 
 func (o *RequestAppointmentForPatientOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewRequestAppointmentForPatientForbidden creates a RequestAppointmentForPatientForbidden with default headers values
+func NewRequestAppointmentForPatientForbidden() *RequestAppointmentForPatientForbidden {
+	return &RequestAppointmentForPatientForbidden{}
+}
+
+/*RequestAppointmentForPatientForbidden handles this case with default header values.
+
+internal server error
+*/
+type RequestAppointmentForPatientForbidden struct {
+	Payload *models.Error
+}
+
+func (o *RequestAppointmentForPatientForbidden) Error() string {
+	return fmt.Sprintf("[PUT /v1/patients/{id}/appointments/{idAppointment}/request][%d] requestAppointmentForPatientForbidden  %+v", 403, o.Payload)
+}
+
+func (o *RequestAppointmentForPatientForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }
