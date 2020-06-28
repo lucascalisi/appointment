@@ -45,6 +45,29 @@ definitions:
         items:
           $ref: "#/definitions/role"
         
+  queueItem:
+    type: object
+    required:
+      - idPatient
+      - idSpecialty
+    properties:
+      id:
+        type: integer
+      idPatient:
+        type: integer
+      idSpecialty:
+        type: integer
+      status:
+        type: string
+        
+  queue:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/queueItem"
+    
   patient:
     type: object
     required:
@@ -199,6 +222,38 @@ paths:
             
         401:
           description: access denied
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+
+
+  /v1/queue:
+    post:
+      operationId: addPatientToQueue 
+      tags:
+        - queue
+      parameters:
+        - name: item
+          in: body
+          schema:
+            $ref: "#/definitions/queueItem"
+      responses:
+        200:
+          description: added successful
+        500:
+          description: internal server error
+          schema:
+            $ref: "#/definitions/error"
+    get:
+      operationId: GetQueue 
+      tags:
+        - queue
+      responses:
+        200:
+          description: get successful
+          schema:
+            $ref: "#/definitions/queue"
         500:
           description: internal server error
           schema:

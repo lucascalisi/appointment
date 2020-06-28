@@ -108,3 +108,13 @@ CREATE TABLE `appointments` (
 	 FOREIGN KEY (idPatient) REFERENCES patients(idUser),
 	 FOREIGN KEY (idSpecialityDetail) REFERENCES specialityDetailsByProfessional(id)
 );
+
+CREATE TABLE `queue` (
+	`id` int(11)  NOT NULL AUTO_INCREMENT,
+	`idPatient` int(11)  NOT NULL,
+	`status` varchar(50) NOT NULL,
+	`idSpecialityDetail` int(11) NOT NULL,
+	 PRIMARY KEY (`id`)
+);
+
+ALTER TABLE queue ADD CONSTRAINT uniq_item_patient_specialty UNIQUE(idPatient, idSpecialityDetail, status)

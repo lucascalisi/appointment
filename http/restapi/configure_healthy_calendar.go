@@ -57,6 +57,9 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 
 	api.PatientsCancelAppoinmentForPatientHandler = patientCancelAppointment(db)
 
+	api.QueueGetQueueHandler = getQueue(db)
+	api.QueueAddPatientToQueueHandler = addItem(db)
+
 	api.ProfessionalsCancelAppointmentProfessionalHandler = professionalCancelAppointment(db, emailSender)
 
 	api.PatientsConfirmAppointmentForPatientHandler = patientConfirmAppointment(db)

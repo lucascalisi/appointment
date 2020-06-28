@@ -665,6 +665,54 @@ func init() {
         }
       }
     },
+    "/v1/queue": {
+      "get": {
+        "tags": [
+          "queue"
+        ],
+        "operationId": "GetQueue",
+        "responses": {
+          "200": {
+            "description": "get successful",
+            "schema": {
+              "$ref": "#/definitions/queue"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "queue"
+        ],
+        "operationId": "addPatientToQueue",
+        "parameters": [
+          {
+            "name": "item",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/queueItem"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "added successful"
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v1/specialties": {
       "get": {
         "tags": [
@@ -820,6 +868,38 @@ func init() {
           "type": "integer"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queueItem"
+          }
+        }
+      }
+    },
+    "queueItem": {
+      "type": "object",
+      "required": [
+        "idPatient",
+        "idSpecialty"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "idPatient": {
+          "type": "integer"
+        },
+        "idSpecialty": {
+          "type": "integer"
+        },
+        "status": {
           "type": "string"
         }
       }
@@ -1576,6 +1656,54 @@ func init() {
         }
       }
     },
+    "/v1/queue": {
+      "get": {
+        "tags": [
+          "queue"
+        ],
+        "operationId": "GetQueue",
+        "responses": {
+          "200": {
+            "description": "get successful",
+            "schema": {
+              "$ref": "#/definitions/queue"
+            }
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "queue"
+        ],
+        "operationId": "addPatientToQueue",
+        "parameters": [
+          {
+            "name": "item",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/queueItem"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "added successful"
+          },
+          "500": {
+            "description": "internal server error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/v1/specialties": {
       "get": {
         "tags": [
@@ -1731,6 +1859,38 @@ func init() {
           "type": "integer"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "queue": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queueItem"
+          }
+        }
+      }
+    },
+    "queueItem": {
+      "type": "object",
+      "required": [
+        "idPatient",
+        "idSpecialty"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "idPatient": {
+          "type": "integer"
+        },
+        "idSpecialty": {
+          "type": "integer"
+        },
+        "status": {
           "type": "string"
         }
       }

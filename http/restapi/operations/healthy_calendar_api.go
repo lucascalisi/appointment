@@ -23,6 +23,7 @@ import (
 	"github.com/appointment/http/restapi/operations/login"
 	"github.com/appointment/http/restapi/operations/patients"
 	"github.com/appointment/http/restapi/operations/professionals"
+	"github.com/appointment/http/restapi/operations/queue"
 	"github.com/appointment/http/restapi/operations/specialties"
 )
 
@@ -43,6 +44,12 @@ func NewHealthyCalendarAPI(spec *loads.Document) *HealthyCalendarAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
+		QueueGetQueueHandler: queue.GetQueueHandlerFunc(func(params queue.GetQueueParams) middleware.Responder {
+			return middleware.NotImplemented("operation QueueGetQueue has not yet been implemented")
+		}),
+		QueueAddPatientToQueueHandler: queue.AddPatientToQueueHandlerFunc(func(params queue.AddPatientToQueueParams) middleware.Responder {
+			return middleware.NotImplemented("operation QueueAddPatientToQueue has not yet been implemented")
+		}),
 		ProfessionalsAttendAppointmentProfessionalHandler: professionals.AttendAppointmentProfessionalHandlerFunc(func(params professionals.AttendAppointmentProfessionalParams) middleware.Responder {
 			return middleware.NotImplemented("operation ProfessionalsAttendAppointmentProfessional has not yet been implemented")
 		}),
@@ -122,6 +129,10 @@ type HealthyCalendarAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
+	// QueueGetQueueHandler sets the operation handler for the get queue operation
+	QueueGetQueueHandler queue.GetQueueHandler
+	// QueueAddPatientToQueueHandler sets the operation handler for the add patient to queue operation
+	QueueAddPatientToQueueHandler queue.AddPatientToQueueHandler
 	// ProfessionalsAttendAppointmentProfessionalHandler sets the operation handler for the attend appointment professional operation
 	ProfessionalsAttendAppointmentProfessionalHandler professionals.AttendAppointmentProfessionalHandler
 	// PatientsCancelAppoinmentForPatientHandler sets the operation handler for the cancel appoinment for patient operation
@@ -215,6 +226,14 @@ func (o *HealthyCalendarAPI) Validate() error {
 
 	if o.JSONProducer == nil {
 		unregistered = append(unregistered, "JSONProducer")
+	}
+
+	if o.QueueGetQueueHandler == nil {
+		unregistered = append(unregistered, "queue.GetQueueHandler")
+	}
+
+	if o.QueueAddPatientToQueueHandler == nil {
+		unregistered = append(unregistered, "queue.AddPatientToQueueHandler")
 	}
 
 	if o.ProfessionalsAttendAppointmentProfessionalHandler == nil {
@@ -378,6 +397,16 @@ func (o *HealthyCalendarAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/v1/queue"] = queue.NewGetQueue(o.context, o.QueueGetQueueHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/v1/queue"] = queue.NewAddPatientToQueue(o.context, o.QueueAddPatientToQueueHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)

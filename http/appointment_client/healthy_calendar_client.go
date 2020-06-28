@@ -15,6 +15,7 @@ import (
 	"github.com/appointment/http/appointment_client/login"
 	"github.com/appointment/http/appointment_client/patients"
 	"github.com/appointment/http/appointment_client/professionals"
+	"github.com/appointment/http/appointment_client/queue"
 	"github.com/appointment/http/appointment_client/specialties"
 )
 
@@ -68,6 +69,8 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *HealthyCal
 	cli.Patients = patients.New(transport, formats)
 
 	cli.Professionals = professionals.New(transport, formats)
+
+	cli.Queue = queue.New(transport, formats)
 
 	cli.Specialties = specialties.New(transport, formats)
 
@@ -123,6 +126,8 @@ type HealthyCalendar struct {
 
 	Professionals *professionals.Client
 
+	Queue *queue.Client
+
 	Specialties *specialties.Client
 
 	Transport runtime.ClientTransport
@@ -139,6 +144,8 @@ func (c *HealthyCalendar) SetTransport(transport runtime.ClientTransport) {
 	c.Patients.SetTransport(transport)
 
 	c.Professionals.SetTransport(transport)
+
+	c.Queue.SetTransport(transport)
 
 	c.Specialties.SetTransport(transport)
 

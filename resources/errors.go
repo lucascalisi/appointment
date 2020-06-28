@@ -66,4 +66,5 @@ var AttendOtherSpecialtyThisDay error = fmt.Errorf("not could attend more than s
 var ScheduleAlreadySetted error = fmt.Errorf("not could set again the schedule for the same year and month")
 var PatientEmailNotFound error = fmt.Errorf("not could get email for patient")
 var AppointmentAlreadyCancelled error = fmt.Errorf("not could cancel the appointment")
+var PatientIsAlreadyWaiting error = fmt.Errorf("not could add patient to queue")
 var NotFound error = fmt.Errorf("not found")
