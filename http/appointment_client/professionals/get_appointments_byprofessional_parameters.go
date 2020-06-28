@@ -22,7 +22,7 @@ import (
 // with the default values initialized.
 func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("avaiable")
+		statusDefault = string("confirmed")
 	)
 	return &GetAppointmentsByprofessionalParams{
 		Status: &statusDefault,
@@ -35,7 +35,7 @@ func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalPara
 // with the default values initialized, and the ability to set a timeout on a request
 func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("avaiable")
+		statusDefault = string("confirmed")
 	)
 	return &GetAppointmentsByprofessionalParams{
 		Status: &statusDefault,
@@ -48,7 +48,7 @@ func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *G
 // with the default values initialized, and the ability to set a context for a request
 func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("avaiable")
+		statusDefault = string("confirmed")
 	)
 	return &GetAppointmentsByprofessionalParams{
 		Status: &statusDefault,
@@ -61,7 +61,7 @@ func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *Get
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewGetAppointmentsByprofessionalParamsWithHTTPClient(client *http.Client) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("avaiable")
+		statusDefault = string("confirmed")
 	)
 	return &GetAppointmentsByprofessionalParams{
 		Status:     &statusDefault,

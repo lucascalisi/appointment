@@ -401,7 +401,7 @@ func init() {
               "avaiable"
             ],
             "type": "string",
-            "default": "avaiable",
+            "default": "confirmed",
             "name": "status",
             "in": "query"
           }
@@ -1312,7 +1312,7 @@ func init() {
               "avaiable"
             ],
             "type": "string",
-            "default": "avaiable",
+            "default": "confirmed",
             "name": "status",
             "in": "query"
           }

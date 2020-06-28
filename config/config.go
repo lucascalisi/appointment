@@ -14,10 +14,18 @@ type DBConfig struct {
 	DBName     string
 }
 
+type EmailSenderCfg struct {
+	User             string
+	MySecretPassword string
+	SMTPServer       string
+	Port             string
+}
+
 type Config struct {
 	DBCfg               DBConfig
 	Debug               bool
 	AppointmentDuration int
+	EmailSenderCfg      EmailSenderCfg
 }
 
 func GetConfig() (Config, error) {
@@ -28,10 +36,16 @@ func GetConfig() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+
+	esCfg, err := getEmailSenderConfig()
+	if err != nil {
+		return Config{}, err
+	}
 	return Config{
 		DBCfg:               dbCfg,
 		AppointmentDuration: 30,
 		Debug:               debugEnv,
+		EmailSenderCfg:      esCfg,
 	}, nil
 }
 
@@ -57,4 +71,15 @@ func getDBConfig() (DBConfig, error) {
 	}
 
 	return dbCfg, nil
+}
+
+func getEmailSenderConfig() (EmailSenderCfg, error) {
+	esCfg := EmailSenderCfg{}
+
+	esCfg.MySecretPassword = os.Getenv("SMTP_PASSWORD")
+	esCfg.User = os.Getenv("SMTP_USER")
+	esCfg.SMTPServer = os.Getenv("SMTP_SERVER")
+	esCfg.Port = os.Getenv("SMTP_PORT")
+
+	return esCfg, nil
 }

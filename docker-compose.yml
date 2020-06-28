@@ -27,6 +27,10 @@ services:
       DBPASSWORD: prueba12345
       DBHOST: db_appointment
       DBPORT: 3306
+      SMTP_PASSWORD: M28+CMq218ACK2+X>A
+      SMTP_SERVER: smtp.gmail.com
+      SMTP_PORT: 587
+      SMTP_USER: tpuade.healthycalendar@gmail.com
     depends_on:
       - db_appointment
 

@@ -8,6 +8,7 @@ type PatientStorage interface {
 	requestAppointment(patientID int64, appointmentID int64) error
 	confirmAppointment(patientID int64, appointmentID int64) error
 	cancelAppointment(patientID int64, appointmentID int64) error
+	getEmailByPatient(patientID int64) (string, error)
 }
 
 type Patient struct {

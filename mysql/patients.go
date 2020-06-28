@@ -94,3 +94,16 @@ func (db *DB) CancelAppointment(patientID int64, appointmentID int64) error {
 
 	return nil
 }
+
+func (db *DB) GetEmailByPatient(patientID int64) (string, error) {
+	var email *string
+	err := db.QueryRow("SELECT email FROM users WHERE id = ?", patientID).Scan(&email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return *email, rec.NotFound
+		}
+		return *email, rec.NewStorageError(fmt.Sprintf("could not get email for patient : %v", err))
+	}
+
+	return *email, nil
+}

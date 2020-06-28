@@ -9,12 +9,11 @@ import (
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/appointment/config"
 	"github.com/appointment/http/restapi/operations"
-	"github.com/appointment/http/restapi/operations/professionals"
 	"github.com/appointment/mysql"
+	"github.com/appointment/utils"
 )
 
 //go:generate swagger generate server --target ../../http --name APPointmentBackend --spec ../swagger/swagger.yml
@@ -48,15 +47,17 @@ func configureAPI(api *operations.HealthyCalendarAPI) http.Handler {
 		log.Fatalf("could not establish connection to the database: %v", err)
 	}
 
+	emailSender, err := utils.NewEmailSender(cfg.EmailSenderCfg.User, cfg.EmailSenderCfg.MySecretPassword,
+		cfg.EmailSenderCfg.SMTPServer, cfg.EmailSenderCfg.Port)
+	if err != nil {
+		log.Fatalf("could not instance new email sender: %v", err)
+	}
+
 	mysql.SetConnectionParameters(db)
 
 	api.PatientsCancelAppoinmentForPatientHandler = patientCancelAppointment(db)
 
-	if api.ProfessionalsCancelAppointmentProfessionalHandler == nil {
-		api.ProfessionalsCancelAppointmentProfessionalHandler = professionals.CancelAppointmentProfessionalHandlerFunc(func(params professionals.CancelAppointmentProfessionalParams) middleware.Responder {
-			return middleware.NotImplemented("operation professionals.CancelAppointmentProfessional has not yet been implemented")
-		})
-	}
+	api.ProfessionalsCancelAppointmentProfessionalHandler = professionalCancelAppointment(db, emailSender)
 
 	api.PatientsConfirmAppointmentForPatientHandler = patientConfirmAppointment(db)
 

@@ -374,7 +374,7 @@ paths:
             - cancelled
             - pending
             - avaiable
-          default: "avaiable"
+          default: "confirmed"
       responses:
         200:
           description: result search appointment professional

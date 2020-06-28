@@ -24,7 +24,7 @@ func NewGetAppointmentsByprofessionalParams() GetAppointmentsByprofessionalParam
 	var (
 		// initialize parameters with default values
 
-		statusDefault = string("avaiable")
+		statusDefault = string("confirmed")
 	)
 
 	return GetAppointmentsByprofessionalParams{
@@ -48,7 +48,7 @@ type GetAppointmentsByprofessionalParams struct {
 	ID int64
 	/*
 	  In: query
-	  Default: "avaiable"
+	  Default: "confirmed"
 	*/
 	Status *string
 }

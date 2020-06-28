@@ -7,6 +7,7 @@ import (
 	"github.com/appointment/http/models"
 	"github.com/appointment/http/restapi/operations/professionals"
 	rec "github.com/appointment/resources"
+	"github.com/appointment/utils"
 	middleware "github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
 )
@@ -232,6 +233,44 @@ func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDurati
 	}
 }
 
+type professionalsAppointmentCanceler interface {
+	ProfessionalCancelAppointment(professionalID int64, appointmentID int64) error
+	GetAppointmentById(id int64) (rec.Appointment, error)
+	GetEmailByPatient(idPatient int64) (string, error)
+}
+
+func professionalCancelAppointment(stg professionalsAppointmentCanceler, emailSender utils.EmailSender) professionals.CancelAppointmentProfessionalHandlerFunc {
+	return func(params professionals.CancelAppointmentProfessionalParams) middleware.Responder {
+		appointment, err := stg.GetAppointmentById(params.Idappointment)
+		if err != nil {
+			return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		if appointment.Status == "cancelled" {
+			return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(rec.AppointmentAlreadyCancelled))
+		}
+
+		if appointment.Professional.ID == params.ID {
+			err := stg.ProfessionalCancelAppointment(params.ID, params.Idappointment)
+			if err != nil {
+				return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(err))
+			}
+
+			if appointment.Status == "pending" || appointment.Status == "confirmed" {
+				email, err := stg.GetEmailByPatient(appointment.Patient.ID)
+				if err != nil {
+					return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(rec.PatientEmailNotFound))
+				}
+				subject := "Subject: [IMPORTANTE] Notificacion Turno Medico Cancelado\n"
+				body := fmt.Sprintf("<html><body>Estimado/a paciente <b>%v</b>,<br>Su turno con el doctor <b>%v</b> el dia %v ha sido cancelado.<br>En breve sera contactado para su reprogramacion. <br>Disculpe las molestias.<br>Saludos<br><br>HealthyCalendar UADE TP</body></html>", appointment.Patient.Name, appointment.Professional.Name, appointment.Date)
+				emailSender.SendCancelAppointmentNotificacion(email, subject, body)
+			}
+			return professionals.NewCancelAppointmentProfessionalOK()
+		}
+		return professionals.NewCancelAppointmentProfessionalInternalServerError()
+	}
+}
+
 func checkIfProfessionalsOverlapSpecialty(newSchedule rec.Scheduler, actualSchedules []rec.Scheduler) error {
 	for _, actualSchedule := range actualSchedules {
 		if actualSchedule.Year == newSchedule.Year && actualSchedule.Month == newSchedule.Month && actualSchedule.IDSpecialty == newSchedule.IDSpecialty {
@@ -315,24 +354,6 @@ func modelScheduleToDBSchedule(scheduler *models.Schedule, idSpecialty int64) re
 	schedulerDB.IDSpecialty = idSpecialty
 
 	return schedulerDB
-}
-
-func asd() {
-
-	// get the current month
-	year, month, _ := time.Now().Date()
-
-	fmt.Printf("Current month: [%v]\n", month)
-
-	// get the number of days of the current month
-	t := time.Date(year, month+1, 0, 0, 0, 0, 0, time.UTC)
-	fmt.Printf("Total number of days in [%v], [%v] is [%v]\n", year, month, t.Day())
-
-	// loop each day of the month
-	for day := 1; day <= t.Day(); day++ {
-		// do whatever you want here ...
-		fmt.Println(day, month, year)
-	}
 }
 
 func diffDate(a, b time.Time) (year, month, day, hour, min, sec int) {

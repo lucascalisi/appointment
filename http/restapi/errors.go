@@ -83,6 +83,18 @@ func newRestApiError(err error) *models.Error {
 			Code:        403,
 			Type:        "the schedule in this year - month had already been setted",
 		}
+	case rec.PatientEmailNotFound:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "the schedule in this year - month had already been setted",
+		}
+	case rec.AppointmentAlreadyCancelled:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "the appointment had been already canceled",
+		}
 	}
 	switch err.(type) {
 	default:

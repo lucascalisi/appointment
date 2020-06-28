@@ -11,6 +11,7 @@ type ProfessionalStorage interface {
 	setProfessionalSchedule(professionalID int64, specialtyID int64, scheduler Scheduler) (Scheduler, error)
 	getProfessionalSpecialty(professionalID int64, IDSpecialty int64) (bool, error)
 	searchSchedule(id int64, year int64, month int64) ([]Scheduler, error)
+	professionalCancelAppointment(professionalID int64, appointmentID int64) error
 }
 
 type Professional struct {

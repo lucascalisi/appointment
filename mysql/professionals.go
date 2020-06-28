@@ -332,3 +332,12 @@ func (db *DB) GetProfessionalScheduleByID(idSchedule int64) (rec.Scheduler, erro
 
 	return s, nil
 }
+
+func (db *DB) ProfessionalCancelAppointment(professionalID int64, appointmentID int64) error {
+	_, err := db.Exec(`UPDATE appointments SET status = 'cancelled' WHERE id = ? AND idProfessional = ?`, appointmentID, professionalID)
+	if err != nil {
+		return rec.NewStorageError(fmt.Sprintf("could not cancel appointment  : %v", err))
+	}
+
+	return nil
+}
