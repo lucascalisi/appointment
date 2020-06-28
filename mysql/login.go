@@ -28,7 +28,6 @@ func (db *DB) Login(cred rec.LoginAuth) (rec.User, error) {
 		r := rec.Role{}
 		err := rows.Scan(&user.ID, &user.Email, &user.Status, &r.ID, &r.Name, &roleDescription)
 		if err != nil {
-			fmt.Println(err)
 			return rec.User{}, rec.StorageError{
 				Description: fmt.Sprintf("could not scan user: %v", err),
 			}
