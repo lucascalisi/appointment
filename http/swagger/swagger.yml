@@ -366,6 +366,15 @@ paths:
           format: int64
           required: true
           description: id professional
+        - name: status
+          in: query
+          type: string
+          enum:
+            - confirmed
+            - cancelled
+            - pending
+            - avaiable
+          default: "avaiable"
       responses:
         200:
           description: result search appointment professional

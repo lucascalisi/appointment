@@ -71,6 +71,18 @@ func newRestApiError(err error) *models.Error {
 			Code:        403,
 			Type:        "selected date is more than two months",
 		}
+	case rec.AttendOtherSpecialtyThisDay:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "other specialty is attended in that day.",
+		}
+	case rec.ScheduleAlreadySetted:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "the schedule in this year - month had already been setted",
+		}
 	}
 	switch err.(type) {
 	default:

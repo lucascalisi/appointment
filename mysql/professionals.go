@@ -20,12 +20,13 @@ func (db *DB) GetProfessionalByID(id int64) (rec.Professional, error) {
 	return result, nil
 }
 
-func (db *DB) GetProfessionalAppointments(id int64) ([]rec.Appointment, error) {
+func (db *DB) GetProfessionalAppointments(id int64, status string) ([]rec.Appointment, error) {
 	query := `SELECT id, idProfessional, status, date, idPatient
 	FROM appointments
-	WHERE idProfessional = ?`
+	WHERE idProfessional = ?
+	AND status = ?`
 
-	rows, err := db.Query(query, id)
+	rows, err := db.Query(query, id, status)
 	if err != nil {
 		return nil, rec.NewStorageError(fmt.Sprintf("could not get appointments  : %v", err))
 	}
@@ -186,8 +187,44 @@ func (db *DB) GetProfessionalSchedule(id int64, idSpecialty int64) ([]rec.Schedu
 	for rows.Next() {
 		s := rec.Scheduler{}
 		var idProfessional *int64
-		var idSpeciality *int64
-		err := rows.Scan(&s.ID, &idProfessional, &idSpeciality, &s.Year, &s.Month)
+		err := rows.Scan(&s.ID, &idProfessional, &s.IDSpecialty, &s.Year, &s.Month)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not get schedules: %v", err),
+			}
+		}
+
+		s.Schedule, err = db.GetSchedulerItemsByID(s.ID)
+		if err != nil {
+			return nil, rec.StorageError{
+				Description: fmt.Sprintf("could not get schedule items: %v", err),
+			}
+		}
+		schedulers = append(schedulers, s)
+	}
+
+	return schedulers, nil
+}
+
+func (db *DB) SearchSchedule(id int64, year int64, month int64) ([]rec.Scheduler, error) {
+	query := `SELECT s.id, s.idProfessional, s.idSpeciality, s.year, s.month
+	FROM professionalsScheduleBySpecialty s
+	WHERE idProfessional = ?
+	AND year = ?
+	AND month = ?`
+
+	rows, err := db.Query(query, id, year, month)
+	if err != nil {
+		return nil, rec.NewStorageError(fmt.Sprintf("could not get schedules by professional: %v", err))
+	}
+
+	defer rows.Close()
+
+	schedulers := []rec.Scheduler{}
+	for rows.Next() {
+		s := rec.Scheduler{}
+		var idProfessional *int64
+		err := rows.Scan(&s.ID, &idProfessional, &s.IDSpecialty, &s.Year, &s.Month)
 		if err != nil {
 			return nil, rec.StorageError{
 				Description: fmt.Sprintf("could not get schedules: %v", err),

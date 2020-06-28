@@ -18,6 +18,8 @@ import (
 type GetAppointmentsByprofessionalURL struct {
 	ID int64
 
+	Status *string
+
 	_basePath string
 	// avoid unkeyed usage
 	_ struct{}
@@ -53,6 +55,18 @@ func (o *GetAppointmentsByprofessionalURL) Build() (*url.URL, error) {
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+
+	qs := make(url.Values)
+
+	var statusQ string
+	if o.Status != nil {
+		statusQ = *o.Status
+	}
+	if statusQ != "" {
+		qs.Set("status", statusQ)
+	}
+
+	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

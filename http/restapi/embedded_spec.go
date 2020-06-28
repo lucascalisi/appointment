@@ -392,6 +392,18 @@ func init() {
             "name": "id",
             "in": "path",
             "required": true
+          },
+          {
+            "enum": [
+              "confirmed",
+              "cancelled",
+              "pending",
+              "avaiable"
+            ],
+            "type": "string",
+            "default": "avaiable",
+            "name": "status",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1291,6 +1303,18 @@ func init() {
             "name": "id",
             "in": "path",
             "required": true
+          },
+          {
+            "enum": [
+              "confirmed",
+              "cancelled",
+              "pending",
+              "avaiable"
+            ],
+            "type": "string",
+            "default": "avaiable",
+            "name": "status",
+            "in": "query"
           }
         ],
         "responses": {

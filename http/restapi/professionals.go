@@ -26,12 +26,12 @@ func getProfessional(stg professionalGetter) professionals.GetProfessionalbyIDHa
 }
 
 type professionalAppointmentsGetter interface {
-	GetProfessionalAppointments(professionalID int64) ([]rec.Appointment, error)
+	GetProfessionalAppointments(professionalID int64, status string) ([]rec.Appointment, error)
 }
 
 func getProfessionalAppointments(stg professionalAppointmentsGetter) professionals.GetAppointmentsByprofessionalHandlerFunc {
 	return func(params professionals.GetAppointmentsByprofessionalParams) middleware.Responder {
-		appointmentsSearched, err := stg.GetProfessionalAppointments(params.ID)
+		appointmentsSearched, err := stg.GetProfessionalAppointments(params.ID, *params.Status)
 
 		if err != nil {
 			return professionals.NewGetAppointmentsByprofessionalInternalServerError().WithPayload(newRestApiError(err))
@@ -168,6 +168,7 @@ type professionalSchedulesSetter interface {
 	GetProfessionalSpecialty(professionalID int64, IDSpecialty int64) (rec.Specialty, error)
 	GetProfessionalSchedule(professionalID int64, specialtyID int64) ([]rec.Scheduler, error)
 	CreateAppointment(rec.Appointment) error
+	SearchSchedule(id int64, year int64, month int64) ([]rec.Scheduler, error)
 }
 
 func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDuration int) professionals.SetProfesionalScheduleBySpecialtyHandlerFunc {
@@ -197,10 +198,20 @@ func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDurati
 		if year > 1 || month > 2 || month < 0 {
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(rec.EditMoreThanTwoMonths))
 		}
-		schedule := modelScheduleToDBSchedule(paramSchedule)
+		schedule := modelScheduleToDBSchedule(paramSchedule, params.IDSpecialty)
+
+		schedulesGetted, err := stg.SearchSchedule(params.ID, schedule.Year, schedule.Month)
+		if err != nil {
+			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
+		}
+
+		err = checkIfProfessionalsOverlapSpecialty(schedule, schedulesGetted)
+		if err != nil {
+			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
+		}
+
 		newSchedule, err := stg.SetProfessionalSchedule(params.ID, params.IDSpecialty, schedule)
 		if err != nil {
-			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
@@ -219,6 +230,22 @@ func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDurati
 
 		return professionals.NewSetProfesionalScheduleBySpecialtyOK()
 	}
+}
+
+func checkIfProfessionalsOverlapSpecialty(newSchedule rec.Scheduler, actualSchedules []rec.Scheduler) error {
+	for _, actualSchedule := range actualSchedules {
+		if actualSchedule.Year == newSchedule.Year && actualSchedule.Month == newSchedule.Month && actualSchedule.IDSpecialty == newSchedule.IDSpecialty {
+			return rec.ScheduleAlreadySetted
+		}
+		for _, item := range actualSchedule.Schedule {
+			for _, newItem := range newSchedule.Schedule {
+				if newItem.Day == item.Day {
+					return rec.AttendOtherSpecialtyThisDay
+				}
+			}
+		}
+	}
+	return nil
 }
 
 func generateAppointmentsbySchedule(idProfesional int64, idSpecialty int64, sch rec.Scheduler, appointmentDuration int) ([]rec.Appointment, error) {
@@ -270,7 +297,7 @@ func generateAppointmentsbySchedule(idProfesional int64, idSpecialty int64, sch 
 	return appointments, nil
 }
 
-func modelScheduleToDBSchedule(scheduler *models.Schedule) rec.Scheduler {
+func modelScheduleToDBSchedule(scheduler *models.Schedule, idSpecialty int64) rec.Scheduler {
 	schedulerItemsDB := []rec.ScheduleItems{}
 	schedulerDB := rec.Scheduler{}
 
@@ -285,6 +312,7 @@ func modelScheduleToDBSchedule(scheduler *models.Schedule) rec.Scheduler {
 	schedulerDB.Year = *scheduler.Year
 	schedulerDB.Month = *scheduler.Month
 	schedulerDB.Schedule = schedulerItemsDB
+	schedulerDB.IDSpecialty = idSpecialty
 
 	return schedulerDB
 }

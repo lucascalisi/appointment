@@ -21,8 +21,11 @@ import (
 // NewGetAppointmentsByprofessionalParams creates a new GetAppointmentsByprofessionalParams object
 // with the default values initialized.
 func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalParams {
-	var ()
+	var (
+		statusDefault = string("avaiable")
+	)
 	return &GetAppointmentsByprofessionalParams{
+		Status: &statusDefault,
 
 		timeout: cr.DefaultTimeout,
 	}
@@ -31,8 +34,11 @@ func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalPara
 // NewGetAppointmentsByprofessionalParamsWithTimeout creates a new GetAppointmentsByprofessionalParams object
 // with the default values initialized, and the ability to set a timeout on a request
 func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *GetAppointmentsByprofessionalParams {
-	var ()
+	var (
+		statusDefault = string("avaiable")
+	)
 	return &GetAppointmentsByprofessionalParams{
+		Status: &statusDefault,
 
 		timeout: timeout,
 	}
@@ -41,8 +47,11 @@ func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *G
 // NewGetAppointmentsByprofessionalParamsWithContext creates a new GetAppointmentsByprofessionalParams object
 // with the default values initialized, and the ability to set a context for a request
 func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *GetAppointmentsByprofessionalParams {
-	var ()
+	var (
+		statusDefault = string("avaiable")
+	)
 	return &GetAppointmentsByprofessionalParams{
+		Status: &statusDefault,
 
 		Context: ctx,
 	}
@@ -51,8 +60,11 @@ func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *Get
 // NewGetAppointmentsByprofessionalParamsWithHTTPClient creates a new GetAppointmentsByprofessionalParams object
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewGetAppointmentsByprofessionalParamsWithHTTPClient(client *http.Client) *GetAppointmentsByprofessionalParams {
-	var ()
+	var (
+		statusDefault = string("avaiable")
+	)
 	return &GetAppointmentsByprofessionalParams{
+		Status:     &statusDefault,
 		HTTPClient: client,
 	}
 }
@@ -67,6 +79,8 @@ type GetAppointmentsByprofessionalParams struct {
 
 	*/
 	ID int64
+	/*Status*/
+	Status *string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -117,6 +131,17 @@ func (o *GetAppointmentsByprofessionalParams) SetID(id int64) {
 	o.ID = id
 }
 
+// WithStatus adds the status to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) WithStatus(status *string) *GetAppointmentsByprofessionalParams {
+	o.SetStatus(status)
+	return o
+}
+
+// SetStatus adds the status to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) SetStatus(status *string) {
+	o.Status = status
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *GetAppointmentsByprofessionalParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -128,6 +153,22 @@ func (o *GetAppointmentsByprofessionalParams) WriteToRequest(r runtime.ClientReq
 	// path param id
 	if err := r.SetPathParam("id", swag.FormatInt64(o.ID)); err != nil {
 		return err
+	}
+
+	if o.Status != nil {
+
+		// query param status
+		var qrStatus string
+		if o.Status != nil {
+			qrStatus = *o.Status
+		}
+		qStatus := qrStatus
+		if qStatus != "" {
+			if err := r.SetQueryParam("status", qStatus); err != nil {
+				return err
+			}
+		}
+
 	}
 
 	if len(res) > 0 {

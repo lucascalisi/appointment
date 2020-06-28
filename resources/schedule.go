@@ -3,10 +3,11 @@ package resources
 import "fmt"
 
 type Scheduler struct {
-	ID       int64
-	Year     int64
-	Month    int64
-	Schedule []ScheduleItems
+	ID          int64
+	Year        int64
+	Month       int64
+	Schedule    []ScheduleItems
+	IDSpecialty int64
 }
 
 type ScheduleItems struct {
