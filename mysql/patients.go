@@ -61,6 +61,10 @@ func (db *DB) GetPatientAppointments(id int64) ([]rec.Appointment, error) {
 			}
 		}
 
+		if idSpecialityDetail != nil {
+			a.Specialty, _ = db.GetSpecialtyByDetail(*idSpecialityDetail)
+		}
+
 		a.Patient = patient
 		result = append(result, a)
 	}

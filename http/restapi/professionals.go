@@ -43,18 +43,26 @@ func getProfessionalAppointments(stg professionalAppointmentsGetter) professiona
 			thisAppointment := a
 			thisPatient := a.Patient
 			thisProfessional := a.Professional
+			thisSpecialty := a.Specialty
 
 			date := strfmt.DateTime(thisAppointment.Date)
 
 			professional := dbProfessionalToModelProfessional(thisProfessional)
 			patient := dbPatientToModelPatient(thisPatient)
 
+			specialty := models.Specialty{
+				ID:            thisSpecialty.ID,
+				Category:      &thisSpecialty.Category,
+				IDSubcategory: thisSpecialty.SubCategories[0].ID,
+				SubCategory:   thisSpecialty.SubCategories[0].SubCategory,
+			}
 			appointment := models.Appointment{
 				ID:           thisAppointment.ID,
 				Date:         &date,
 				Status:       models.AppointmentStatus(thisAppointment.Status),
 				Patient:      patient,
 				Professional: professional,
+				Specialty:    &specialty,
 			}
 			result = append(result, &appointment)
 		}
