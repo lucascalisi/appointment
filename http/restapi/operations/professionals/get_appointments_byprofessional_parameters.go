@@ -6,6 +6,7 @@ package professionals
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -24,11 +25,25 @@ func NewGetAppointmentsByprofessionalParams() GetAppointmentsByprofessionalParam
 	var (
 		// initialize parameters with default values
 
-		statusDefault = string("confirmed")
+		finishDateDefault = strfmt.DateTime{}
+
+		idspecialtyDefault = int64(0)
+		startDateDefault   = strfmt.DateTime{}
+		statusDefault      = []string{"confirmed", "pending"}
 	)
 
+	finishDateDefault.UnmarshalText([]byte("2040-01-01T00:00:00Z"))
+
+	startDateDefault.UnmarshalText([]byte("2000-01-01T00:00:00Z"))
+
 	return GetAppointmentsByprofessionalParams{
-		Status: &statusDefault,
+		FinishDate: &finishDateDefault,
+
+		Idspecialty: &idspecialtyDefault,
+
+		StartDate: &startDateDefault,
+
+		Status: statusDefault,
 	}
 }
 
@@ -41,16 +56,31 @@ type GetAppointmentsByprofessionalParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*finish date for appointment
+	  In: query
+	  Default: "2040-01-01T00:00:00Z"
+	*/
+	FinishDate *strfmt.DateTime
 	/*id professional
 	  Required: true
 	  In: path
 	*/
 	ID int64
-	/*
+	/*id for specialty
 	  In: query
-	  Default: "confirmed"
+	  Default: 0
 	*/
-	Status *string
+	Idspecialty *int64
+	/*start date for appointment
+	  In: query
+	  Default: "2000-01-01T00:00:00Z"
+	*/
+	StartDate *strfmt.DateTime
+	/*appointment status
+	  In: query
+	  Default: []interface {}{"confirmed", "pending"}
+	*/
+	Status []string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -64,8 +94,23 @@ func (o *GetAppointmentsByprofessionalParams) BindRequest(r *http.Request, route
 
 	qs := runtime.Values(r.URL.Query())
 
+	qFinishDate, qhkFinishDate, _ := qs.GetOK("finishDate")
+	if err := o.bindFinishDate(qFinishDate, qhkFinishDate, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	rID, rhkID, _ := route.Params.GetOK("id")
 	if err := o.bindID(rID, rhkID, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qIdspecialty, qhkIdspecialty, _ := qs.GetOK("idspecialty")
+	if err := o.bindIdspecialty(qIdspecialty, qhkIdspecialty, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qStartDate, qhkStartDate, _ := qs.GetOK("startDate")
+	if err := o.bindStartDate(qStartDate, qhkStartDate, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -76,6 +121,43 @@ func (o *GetAppointmentsByprofessionalParams) BindRequest(r *http.Request, route
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+// bindFinishDate binds and validates parameter FinishDate from query.
+func (o *GetAppointmentsByprofessionalParams) bindFinishDate(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetAppointmentsByprofessionalParams()
+		return nil
+	}
+
+	// Format: date-time
+	value, err := formats.Parse("date-time", raw)
+	if err != nil {
+		return errors.InvalidType("finishDate", "query", "strfmt.DateTime", raw)
+	}
+	o.FinishDate = (value.(*strfmt.DateTime))
+
+	if err := o.validateFinishDate(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateFinishDate carries on validations for parameter FinishDate
+func (o *GetAppointmentsByprofessionalParams) validateFinishDate(formats strfmt.Registry) error {
+
+	if err := validate.FormatOf("finishDate", "query", "date-time", o.FinishDate.String(), formats); err != nil {
+		return err
 	}
 	return nil
 }
@@ -99,8 +181,8 @@ func (o *GetAppointmentsByprofessionalParams) bindID(rawData []string, hasKey bo
 	return nil
 }
 
-// bindStatus binds and validates parameter Status from query.
-func (o *GetAppointmentsByprofessionalParams) bindStatus(rawData []string, hasKey bool, formats strfmt.Registry) error {
+// bindIdspecialty binds and validates parameter Idspecialty from query.
+func (o *GetAppointmentsByprofessionalParams) bindIdspecialty(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -113,21 +195,81 @@ func (o *GetAppointmentsByprofessionalParams) bindStatus(rawData []string, hasKe
 		return nil
 	}
 
-	o.Status = &raw
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("idspecialty", "query", "int64", raw)
+	}
+	o.Idspecialty = &value
 
-	if err := o.validateStatus(formats); err != nil {
+	return nil
+}
+
+// bindStartDate binds and validates parameter StartDate from query.
+func (o *GetAppointmentsByprofessionalParams) bindStartDate(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewGetAppointmentsByprofessionalParams()
+		return nil
+	}
+
+	// Format: date-time
+	value, err := formats.Parse("date-time", raw)
+	if err != nil {
+		return errors.InvalidType("startDate", "query", "strfmt.DateTime", raw)
+	}
+	o.StartDate = (value.(*strfmt.DateTime))
+
+	if err := o.validateStartDate(formats); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// validateStatus carries on validations for parameter Status
-func (o *GetAppointmentsByprofessionalParams) validateStatus(formats strfmt.Registry) error {
+// validateStartDate carries on validations for parameter StartDate
+func (o *GetAppointmentsByprofessionalParams) validateStartDate(formats strfmt.Registry) error {
 
-	if err := validate.Enum("status", "query", *o.Status, []interface{}{"confirmed", "cancelled", "pending", "avaiable"}); err != nil {
+	if err := validate.FormatOf("startDate", "query", "date-time", o.StartDate.String(), formats); err != nil {
 		return err
 	}
+	return nil
+}
+
+// bindStatus binds and validates array parameter Status from query.
+//
+// Arrays are parsed according to CollectionFormat: "" (defaults to "csv" when empty).
+func (o *GetAppointmentsByprofessionalParams) bindStatus(rawData []string, hasKey bool, formats strfmt.Registry) error {
+
+	var qvStatus string
+	if len(rawData) > 0 {
+		qvStatus = rawData[len(rawData)-1]
+	}
+
+	// CollectionFormat:
+	statusIC := swag.SplitByFormat(qvStatus, "")
+	if len(statusIC) == 0 {
+		// Default values have been previously initialized by NewGetAppointmentsByprofessionalParams()
+		return nil
+	}
+
+	var statusIR []string
+	for i, statusIV := range statusIC {
+		statusI := statusIV
+
+		if err := validate.Enum(fmt.Sprintf("%s.%v", "status", i), "query", statusI, []interface{}{"confirmed", "cancelled", "pending", "avaiable"}); err != nil {
+			return err
+		}
+
+		statusIR = append(statusIR, statusI)
+	}
+
+	o.Status = statusIR
 
 	return nil
 }

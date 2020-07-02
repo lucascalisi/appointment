@@ -6,6 +6,7 @@ package appointments
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-openapi/errors"
@@ -29,7 +30,7 @@ func NewSearchAppointmentParams() SearchAppointmentParams {
 		iDProfessionalDefault = int64(0)
 		idspecialtyDefault    = int64(0)
 		startDateDefault      = strfmt.DateTime{}
-		statusDefault         = string("avaiable")
+		statusDefault         = []string{"avaiable"}
 	)
 
 	finishDateDefault.UnmarshalText([]byte("2040-01-01T00:00:00Z"))
@@ -47,7 +48,7 @@ func NewSearchAppointmentParams() SearchAppointmentParams {
 
 		StartDate: &startDateDefault,
 
-		Status: &statusDefault,
+		Status: statusDefault,
 	}
 }
 
@@ -87,9 +88,9 @@ type SearchAppointmentParams struct {
 	StartDate *strfmt.DateTime
 	/*appointment status
 	  In: query
-	  Default: "avaiable"
+	  Default: []interface {}{"avaiable"}
 	*/
-	Status *string
+	Status []string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -282,35 +283,35 @@ func (o *SearchAppointmentParams) validateStartDate(formats strfmt.Registry) err
 	return nil
 }
 
-// bindStatus binds and validates parameter Status from query.
+// bindStatus binds and validates array parameter Status from query.
+//
+// Arrays are parsed according to CollectionFormat: "" (defaults to "csv" when empty).
 func (o *SearchAppointmentParams) bindStatus(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	var raw string
+
+	var qvStatus string
 	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
+		qvStatus = rawData[len(rawData)-1]
 	}
 
-	// Required: false
-	// AllowEmptyValue: false
-	if raw == "" { // empty values pass all other validations
+	// CollectionFormat:
+	statusIC := swag.SplitByFormat(qvStatus, "")
+	if len(statusIC) == 0 {
 		// Default values have been previously initialized by NewSearchAppointmentParams()
 		return nil
 	}
 
-	o.Status = &raw
+	var statusIR []string
+	for i, statusIV := range statusIC {
+		statusI := statusIV
 
-	if err := o.validateStatus(formats); err != nil {
-		return err
+		if err := validate.Enum(fmt.Sprintf("%s.%v", "status", i), "query", statusI, []interface{}{"confirmed", "cancelled", "pending", "avaiable"}); err != nil {
+			return err
+		}
+
+		statusIR = append(statusIR, statusI)
 	}
 
-	return nil
-}
-
-// validateStatus carries on validations for parameter Status
-func (o *SearchAppointmentParams) validateStatus(formats strfmt.Registry) error {
-
-	if err := validate.Enum("status", "query", *o.Status, []interface{}{"confirmed", "cancelled", "pending", "avaiable"}); err != nil {
-		return err
-	}
+	o.Status = statusIR
 
 	return nil
 }

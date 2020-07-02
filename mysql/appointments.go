@@ -3,13 +3,14 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	rec "github.com/appointment/resources"
 )
 
 func (db *DB) SearchAppointment(params rec.AppointmentSearch) ([]rec.Appointment, error) {
-	fmt.Println(params.IDSpecialty)
-	query := `SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
+	statusFilter := strings.Join(params.Status, "','")
+	query := fmt.Sprintf(`SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
 	FROM appointments
 	WHERE (idProfessional = ?
 		OR ? = 0)
@@ -21,10 +22,10 @@ func (db *DB) SearchAppointment(params rec.AppointmentSearch) ([]rec.Appointment
 		OR ? = '')
 	AND (date < ?
 		OR ? = '')
-	AND (status = ?
-		OR ? = '')`
+	AND status IN ('%s')`, statusFilter)
 
-	rows, err := db.Query(query, params.IDProfessional, params.IDProfessional, params.IDSpecialty, params.IDSpecialty, params.IDPatient, params.IDPatient, params.StartDate, params.StartDate, params.FinishDate, params.FinishDate, params.Status, params.Status)
+	fmt.Println(params.IDSpecialty)
+	rows, err := db.Query(query, params.IDProfessional, params.IDProfessional, params.IDSpecialty, params.IDSpecialty, params.IDPatient, params.IDPatient, params.StartDate, params.StartDate, params.FinishDate, params.FinishDate)
 	if err != nil {
 		return nil, rec.NewStorageError(fmt.Sprintf("could not get user info  : %v", err))
 	}

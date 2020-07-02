@@ -4,7 +4,7 @@ import "time"
 
 type ProfessionalStorage interface {
 	getProfessionalByID(professionalID int64) (Professional, error)
-	getProfessionalAppointments(professionalID int64, status string) ([]Appointment, error)
+	getProfessionalAppointments(professionalID int64, status []string) ([]Appointment, error)
 	getProfessionalAppointment(professionalID int64, appointmentID int64) (Appointment, error)
 	getProfessionalSpecialties(professionalID int64) ([]Specialty, error)
 	getProfessionalSchedule(professionalID int64, specialtyID int64) ([]Scheduler, error)

@@ -83,14 +83,19 @@ func init() {
             "in": "query"
           },
           {
-            "enum": [
-              "confirmed",
-              "cancelled",
-              "pending",
+            "type": "array",
+            "items": {
+              "enum": [
+                "confirmed",
+                "cancelled",
+                "pending",
+                "avaiable"
+              ],
+              "type": "string"
+            },
+            "default": [
               "avaiable"
             ],
-            "type": "string",
-            "default": "avaiable",
             "description": "appointment status",
             "name": "status",
             "in": "query"
@@ -394,14 +399,44 @@ func init() {
             "required": true
           },
           {
-            "enum": [
-              "confirmed",
-              "cancelled",
-              "pending",
-              "avaiable"
-            ],
             "type": "string",
-            "default": "confirmed",
+            "format": "date-time",
+            "default": "2000-01-01T00:00:00Z",
+            "description": "start date for appointment",
+            "name": "startDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "default": "2040-01-01T00:00:00Z",
+            "description": "finish date for appointment",
+            "name": "finishDate",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "description": "id for specialty",
+            "name": "idspecialty",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "enum": [
+                "confirmed",
+                "cancelled",
+                "pending",
+                "avaiable"
+              ],
+              "type": "string"
+            },
+            "default": [
+              "confirmed",
+              "pending"
+            ],
+            "description": "appointment status",
             "name": "status",
             "in": "query"
           }
@@ -1074,14 +1109,19 @@ func init() {
             "in": "query"
           },
           {
-            "enum": [
-              "confirmed",
-              "cancelled",
-              "pending",
+            "type": "array",
+            "items": {
+              "enum": [
+                "confirmed",
+                "cancelled",
+                "pending",
+                "avaiable"
+              ],
+              "type": "string"
+            },
+            "default": [
               "avaiable"
             ],
-            "type": "string",
-            "default": "avaiable",
             "description": "appointment status",
             "name": "status",
             "in": "query"
@@ -1385,14 +1425,44 @@ func init() {
             "required": true
           },
           {
-            "enum": [
-              "confirmed",
-              "cancelled",
-              "pending",
-              "avaiable"
-            ],
             "type": "string",
-            "default": "confirmed",
+            "format": "date-time",
+            "default": "2000-01-01T00:00:00Z",
+            "description": "start date for appointment",
+            "name": "startDate",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "default": "2040-01-01T00:00:00Z",
+            "description": "finish date for appointment",
+            "name": "finishDate",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "description": "id for specialty",
+            "name": "idspecialty",
+            "in": "query"
+          },
+          {
+            "type": "array",
+            "items": {
+              "enum": [
+                "confirmed",
+                "cancelled",
+                "pending",
+                "avaiable"
+              ],
+              "type": "string"
+            },
+            "default": [
+              "confirmed",
+              "pending"
+            ],
+            "description": "appointment status",
             "name": "status",
             "in": "query"
           }

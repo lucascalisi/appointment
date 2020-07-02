@@ -421,15 +421,35 @@ paths:
           format: int64
           required: true
           description: id professional
+        - name: startDate
+          type: string
+          format: date-time
+          in: query
+          description: start date for appointment
+          default: "2000-01-01T00:00:00Z"
+        - name: finishDate
+          type: string
+          format: date-time
+          in: query
+          description: finish date for appointment
+          default: "2040-01-01T00:00:00Z"
+        - name: idspecialty
+          type: integer
+          in: query
+          description: id for specialty
+          default: 0
         - name: status
           in: query
-          type: string
-          enum:
-            - confirmed
-            - cancelled
-            - pending
-            - avaiable
-          default: "confirmed"
+          type: array
+          items:
+            type: string
+            enum:
+              - confirmed
+              - cancelled
+              - pending
+              - avaiable
+          default: ["confirmed", "pending"]
+          description: appointment status
       responses:
         200:
           description: result search appointment professional
@@ -644,13 +664,15 @@ paths:
           default: 0
         - name: status
           in: query
-          type: string
-          enum:
-            - confirmed
-            - cancelled
-            - pending
-            - avaiable
-          default: "avaiable"
+          type: array
+          items:
+            type: string
+            enum:
+              - confirmed
+              - cancelled
+              - pending
+              - avaiable
+          default: ["avaiable"]
           description: appointment status
       responses:
         200:

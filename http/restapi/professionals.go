@@ -27,12 +27,19 @@ func getProfessional(stg professionalGetter) professionals.GetProfessionalbyIDHa
 }
 
 type professionalAppointmentsGetter interface {
-	GetProfessionalAppointments(professionalID int64, status string) ([]rec.Appointment, error)
+	SearchAppointment(rec.AppointmentSearch) ([]rec.Appointment, error)
 }
 
 func getProfessionalAppointments(stg professionalAppointmentsGetter) professionals.GetAppointmentsByprofessionalHandlerFunc {
 	return func(params professionals.GetAppointmentsByprofessionalParams) middleware.Responder {
-		appointmentsSearched, err := stg.GetProfessionalAppointments(params.ID, *params.Status)
+		timezone, _ := time.LoadLocation("America/Buenos_Aires")
+		appointmentsSearched, err := stg.SearchAppointment(rec.AppointmentSearch{
+			IDProfessional: params.ID,
+			StartDate:      time.Time(*params.StartDate).In(timezone).Add(3 * time.Hour),
+			FinishDate:     time.Time(*params.FinishDate).In(timezone).Add(3 * time.Hour),
+			IDSpecialty:    *params.Idspecialty,
+			Status:         params.Status,
+		})
 
 		if err != nil {
 			return professionals.NewGetAppointmentsByprofessionalInternalServerError().WithPayload(newRestApiError(err))

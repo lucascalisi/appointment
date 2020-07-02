@@ -21,7 +21,7 @@ type SearchAppointmentURL struct {
 	IDProfessional *int64
 	Idspecialty    *int64
 	StartDate      *strfmt.DateTime
-	Status         *string
+	Status         []string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -94,12 +94,21 @@ func (o *SearchAppointmentURL) Build() (*url.URL, error) {
 		qs.Set("startDate", startDateQ)
 	}
 
-	var statusQ string
-	if o.Status != nil {
-		statusQ = *o.Status
+	var statusIR []string
+	for _, statusI := range o.Status {
+		statusIS := statusI
+		if statusIS != "" {
+			statusIR = append(statusIR, statusIS)
+		}
 	}
-	if statusQ != "" {
-		qs.Set("status", statusQ)
+
+	status := swag.JoinByFormat(statusIR, "")
+
+	if len(status) > 0 {
+		qsv := status[0]
+		if qsv != "" {
+			qs.Set("status", qsv)
+		}
 	}
 
 	_result.RawQuery = qs.Encode()

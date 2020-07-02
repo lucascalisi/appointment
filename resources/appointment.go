@@ -8,7 +8,7 @@ type AppointmentSearch struct {
 	StartDate      time.Time
 	FinishDate     time.Time
 	IDSpecialty    int64
-	Status         string
+	Status         []string
 }
 
 type AppointmentStorage interface {

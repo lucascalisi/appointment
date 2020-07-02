@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	rec "github.com/appointment/resources"
 )
@@ -20,13 +21,14 @@ func (db *DB) GetProfessionalByID(id int64) (rec.Professional, error) {
 	return result, nil
 }
 
-func (db *DB) GetProfessionalAppointments(id int64, status string) ([]rec.Appointment, error) {
-	query := `SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
+func (db *DB) GetProfessionalAppointments(id int64, status []string) ([]rec.Appointment, error) {
+	statusFilter := strings.Join(status, "','")
+	query := fmt.Sprintf(`SELECT id, idProfessional, status, date, idPatient, idSpecialityDetail
 	FROM appointments
 	WHERE idProfessional = ?
-	AND status = ?`
+	AND status IN ('%s')`, statusFilter)
 
-	rows, err := db.Query(query, id, status)
+	rows, err := db.Query(query, id)
 	if err != nil {
 		return nil, rec.NewStorageError(fmt.Sprintf("could not get appointments  : %v", err))
 	}

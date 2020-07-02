@@ -27,7 +27,7 @@ func NewSearchAppointmentParams() *SearchAppointmentParams {
 		iDProfessionalDefault = int64(0)
 		idspecialtyDefault    = int64(0)
 		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
-		statusDefault         = string("avaiable")
+		statusDefault         = []interface{}{"avaiable"}
 	)
 	return &SearchAppointmentParams{
 		FinishDate:     &finishDateDefault,
@@ -35,7 +35,7 @@ func NewSearchAppointmentParams() *SearchAppointmentParams {
 		IDProfessional: &iDProfessionalDefault,
 		Idspecialty:    &idspecialtyDefault,
 		StartDate:      &startDateDefault,
-		Status:         &statusDefault,
+		Status:         statusDefault,
 
 		timeout: cr.DefaultTimeout,
 	}
@@ -50,7 +50,7 @@ func NewSearchAppointmentParamsWithTimeout(timeout time.Duration) *SearchAppoint
 		iDProfessionalDefault = int64(0)
 		idspecialtyDefault    = int64(0)
 		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
-		statusDefault         = string("avaiable")
+		statusDefault         = []interface{}{"avaiable"}
 	)
 	return &SearchAppointmentParams{
 		FinishDate:     &finishDateDefault,
@@ -58,7 +58,7 @@ func NewSearchAppointmentParamsWithTimeout(timeout time.Duration) *SearchAppoint
 		IDProfessional: &iDProfessionalDefault,
 		Idspecialty:    &idspecialtyDefault,
 		StartDate:      &startDateDefault,
-		Status:         &statusDefault,
+		Status:         statusDefault,
 
 		timeout: timeout,
 	}
@@ -73,7 +73,7 @@ func NewSearchAppointmentParamsWithContext(ctx context.Context) *SearchAppointme
 		idProfessionalDefault = int64(0)
 		idspecialtyDefault    = int64(0)
 		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
-		statusDefault         = string("avaiable")
+		statusDefault         = []interface{}{"avaiable"}
 	)
 	return &SearchAppointmentParams{
 		FinishDate:     &finishDateDefault,
@@ -81,7 +81,7 @@ func NewSearchAppointmentParamsWithContext(ctx context.Context) *SearchAppointme
 		IDProfessional: &idProfessionalDefault,
 		Idspecialty:    &idspecialtyDefault,
 		StartDate:      &startDateDefault,
-		Status:         &statusDefault,
+		Status:         statusDefault,
 
 		Context: ctx,
 	}
@@ -96,7 +96,7 @@ func NewSearchAppointmentParamsWithHTTPClient(client *http.Client) *SearchAppoin
 		idProfessionalDefault = int64(0)
 		idspecialtyDefault    = int64(0)
 		startDateDefault      = strfmt.DateTime("2000-01-01T00:00:00Z")
-		statusDefault         = string("avaiable")
+		statusDefault         = []interface{}{"avaiable"}
 	)
 	return &SearchAppointmentParams{
 		FinishDate:     &finishDateDefault,
@@ -104,7 +104,7 @@ func NewSearchAppointmentParamsWithHTTPClient(client *http.Client) *SearchAppoin
 		IDProfessional: &idProfessionalDefault,
 		Idspecialty:    &idspecialtyDefault,
 		StartDate:      &startDateDefault,
-		Status:         &statusDefault,
+		Status:         statusDefault,
 		HTTPClient:     client,
 	}
 }
@@ -143,7 +143,7 @@ type SearchAppointmentParams struct {
 	  appointment status
 
 	*/
-	Status *string
+	Status []string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -239,13 +239,13 @@ func (o *SearchAppointmentParams) SetStartDate(startDate *strfmt.DateTime) {
 }
 
 // WithStatus adds the status to the search appointment params
-func (o *SearchAppointmentParams) WithStatus(status *string) *SearchAppointmentParams {
+func (o *SearchAppointmentParams) WithStatus(status []string) *SearchAppointmentParams {
 	o.SetStatus(status)
 	return o
 }
 
 // SetStatus adds the status to the search appointment params
-func (o *SearchAppointmentParams) SetStatus(status *string) {
+func (o *SearchAppointmentParams) SetStatus(status []string) {
 	o.Status = status
 }
 
@@ -337,20 +337,12 @@ func (o *SearchAppointmentParams) WriteToRequest(r runtime.ClientRequest, reg st
 
 	}
 
-	if o.Status != nil {
+	valuesStatus := o.Status
 
-		// query param status
-		var qrStatus string
-		if o.Status != nil {
-			qrStatus = *o.Status
-		}
-		qStatus := qrStatus
-		if qStatus != "" {
-			if err := r.SetQueryParam("status", qStatus); err != nil {
-				return err
-			}
-		}
-
+	joinedStatus := swag.JoinByFormat(valuesStatus, "")
+	// query array param status
+	if err := r.SetQueryParam("status", joinedStatus...); err != nil {
+		return err
 	}
 
 	if len(res) > 0 {

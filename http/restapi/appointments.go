@@ -24,7 +24,7 @@ func searchAppointments(stg appointmentSearcher) appointments.SearchAppointmentH
 			StartDate:      time.Time(*params.StartDate).In(timezone).Add(3 * time.Hour),
 			FinishDate:     time.Time(*params.FinishDate).In(timezone).Add(3 * time.Hour),
 			IDSpecialty:    *params.Idspecialty,
-			Status:         *params.Status,
+			Status:         params.Status,
 		})
 
 		if err != nil {

@@ -22,10 +22,16 @@ import (
 // with the default values initialized.
 func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("confirmed")
+		finishDateDefault  = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idspecialtyDefault = int64(0)
+		startDateDefault   = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault      = []interface{}{"confirmed", "pending"}
 	)
 	return &GetAppointmentsByprofessionalParams{
-		Status: &statusDefault,
+		FinishDate:  &finishDateDefault,
+		Idspecialty: &idspecialtyDefault,
+		StartDate:   &startDateDefault,
+		Status:      statusDefault,
 
 		timeout: cr.DefaultTimeout,
 	}
@@ -35,10 +41,16 @@ func NewGetAppointmentsByprofessionalParams() *GetAppointmentsByprofessionalPara
 // with the default values initialized, and the ability to set a timeout on a request
 func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("confirmed")
+		finishDateDefault  = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idspecialtyDefault = int64(0)
+		startDateDefault   = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault      = []interface{}{"confirmed", "pending"}
 	)
 	return &GetAppointmentsByprofessionalParams{
-		Status: &statusDefault,
+		FinishDate:  &finishDateDefault,
+		Idspecialty: &idspecialtyDefault,
+		StartDate:   &startDateDefault,
+		Status:      statusDefault,
 
 		timeout: timeout,
 	}
@@ -48,10 +60,16 @@ func NewGetAppointmentsByprofessionalParamsWithTimeout(timeout time.Duration) *G
 // with the default values initialized, and the ability to set a context for a request
 func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("confirmed")
+		finishDateDefault  = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idspecialtyDefault = int64(0)
+		startDateDefault   = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault      = []interface{}{"confirmed", "pending"}
 	)
 	return &GetAppointmentsByprofessionalParams{
-		Status: &statusDefault,
+		FinishDate:  &finishDateDefault,
+		Idspecialty: &idspecialtyDefault,
+		StartDate:   &startDateDefault,
+		Status:      statusDefault,
 
 		Context: ctx,
 	}
@@ -61,11 +79,17 @@ func NewGetAppointmentsByprofessionalParamsWithContext(ctx context.Context) *Get
 // with the default values initialized, and the ability to set a custom HTTPClient for a request
 func NewGetAppointmentsByprofessionalParamsWithHTTPClient(client *http.Client) *GetAppointmentsByprofessionalParams {
 	var (
-		statusDefault = string("confirmed")
+		finishDateDefault  = strfmt.DateTime("2040-01-01T00:00:00Z")
+		idspecialtyDefault = int64(0)
+		startDateDefault   = strfmt.DateTime("2000-01-01T00:00:00Z")
+		statusDefault      = []interface{}{"confirmed", "pending"}
 	)
 	return &GetAppointmentsByprofessionalParams{
-		Status:     &statusDefault,
-		HTTPClient: client,
+		FinishDate:  &finishDateDefault,
+		Idspecialty: &idspecialtyDefault,
+		StartDate:   &startDateDefault,
+		Status:      statusDefault,
+		HTTPClient:  client,
 	}
 }
 
@@ -74,13 +98,31 @@ for the get appointments byprofessional operation typically these are written to
 */
 type GetAppointmentsByprofessionalParams struct {
 
+	/*FinishDate
+	  finish date for appointment
+
+	*/
+	FinishDate *strfmt.DateTime
 	/*ID
 	  id professional
 
 	*/
 	ID int64
-	/*Status*/
-	Status *string
+	/*Idspecialty
+	  id for specialty
+
+	*/
+	Idspecialty *int64
+	/*StartDate
+	  start date for appointment
+
+	*/
+	StartDate *strfmt.DateTime
+	/*Status
+	  appointment status
+
+	*/
+	Status []string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -120,6 +162,17 @@ func (o *GetAppointmentsByprofessionalParams) SetHTTPClient(client *http.Client)
 	o.HTTPClient = client
 }
 
+// WithFinishDate adds the finishDate to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) WithFinishDate(finishDate *strfmt.DateTime) *GetAppointmentsByprofessionalParams {
+	o.SetFinishDate(finishDate)
+	return o
+}
+
+// SetFinishDate adds the finishDate to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) SetFinishDate(finishDate *strfmt.DateTime) {
+	o.FinishDate = finishDate
+}
+
 // WithID adds the id to the get appointments byprofessional params
 func (o *GetAppointmentsByprofessionalParams) WithID(id int64) *GetAppointmentsByprofessionalParams {
 	o.SetID(id)
@@ -131,14 +184,36 @@ func (o *GetAppointmentsByprofessionalParams) SetID(id int64) {
 	o.ID = id
 }
 
+// WithIdspecialty adds the idspecialty to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) WithIdspecialty(idspecialty *int64) *GetAppointmentsByprofessionalParams {
+	o.SetIdspecialty(idspecialty)
+	return o
+}
+
+// SetIdspecialty adds the idspecialty to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) SetIdspecialty(idspecialty *int64) {
+	o.Idspecialty = idspecialty
+}
+
+// WithStartDate adds the startDate to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) WithStartDate(startDate *strfmt.DateTime) *GetAppointmentsByprofessionalParams {
+	o.SetStartDate(startDate)
+	return o
+}
+
+// SetStartDate adds the startDate to the get appointments byprofessional params
+func (o *GetAppointmentsByprofessionalParams) SetStartDate(startDate *strfmt.DateTime) {
+	o.StartDate = startDate
+}
+
 // WithStatus adds the status to the get appointments byprofessional params
-func (o *GetAppointmentsByprofessionalParams) WithStatus(status *string) *GetAppointmentsByprofessionalParams {
+func (o *GetAppointmentsByprofessionalParams) WithStatus(status []string) *GetAppointmentsByprofessionalParams {
 	o.SetStatus(status)
 	return o
 }
 
 // SetStatus adds the status to the get appointments byprofessional params
-func (o *GetAppointmentsByprofessionalParams) SetStatus(status *string) {
+func (o *GetAppointmentsByprofessionalParams) SetStatus(status []string) {
 	o.Status = status
 }
 
@@ -150,25 +225,65 @@ func (o *GetAppointmentsByprofessionalParams) WriteToRequest(r runtime.ClientReq
 	}
 	var res []error
 
+	if o.FinishDate != nil {
+
+		// query param finishDate
+		var qrFinishDate strfmt.DateTime
+		if o.FinishDate != nil {
+			qrFinishDate = *o.FinishDate
+		}
+		qFinishDate := qrFinishDate.String()
+		if qFinishDate != "" {
+			if err := r.SetQueryParam("finishDate", qFinishDate); err != nil {
+				return err
+			}
+		}
+
+	}
+
 	// path param id
 	if err := r.SetPathParam("id", swag.FormatInt64(o.ID)); err != nil {
 		return err
 	}
 
-	if o.Status != nil {
+	if o.Idspecialty != nil {
 
-		// query param status
-		var qrStatus string
-		if o.Status != nil {
-			qrStatus = *o.Status
+		// query param idspecialty
+		var qrIdspecialty int64
+		if o.Idspecialty != nil {
+			qrIdspecialty = *o.Idspecialty
 		}
-		qStatus := qrStatus
-		if qStatus != "" {
-			if err := r.SetQueryParam("status", qStatus); err != nil {
+		qIdspecialty := swag.FormatInt64(qrIdspecialty)
+		if qIdspecialty != "" {
+			if err := r.SetQueryParam("idspecialty", qIdspecialty); err != nil {
 				return err
 			}
 		}
 
+	}
+
+	if o.StartDate != nil {
+
+		// query param startDate
+		var qrStartDate strfmt.DateTime
+		if o.StartDate != nil {
+			qrStartDate = *o.StartDate
+		}
+		qStartDate := qrStartDate.String()
+		if qStartDate != "" {
+			if err := r.SetQueryParam("startDate", qStartDate); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	valuesStatus := o.Status
+
+	joinedStatus := swag.JoinByFormat(valuesStatus, "")
+	// query array param status
+	if err := r.SetQueryParam("status", joinedStatus...); err != nil {
+		return err
 	}
 
 	if len(res) > 0 {
