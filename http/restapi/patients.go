@@ -116,7 +116,9 @@ func patientRequestAppointment(stg patientAppointmentRequester, appointmentDurat
 			//check if patient request two appointments for the same specialty in the same day
 			if thisAppointment.Date.Day() == appointment.Date.Day() && thisAppointment.Date.Month() == appointment.Date.Month() && thisAppointment.Date.Year() == appointment.Date.Year() {
 				if thisAppointment.Specialty.SubCategories[0].ID == appointment.Specialty.SubCategories[0].ID {
-					return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.MoreThanSpecialtyAppointment))
+					if thisAppointment.Status == "pending" || thisAppointment.Status == "confirmed" {
+						return patients.NewRequestAppointmentForPatientInternalServerError().WithPayload(newRestApiError(rec.MoreThanSpecialtyAppointment))
+					}
 				}
 			}
 			//check overlap appointments for patient
@@ -150,7 +152,7 @@ func patientConfirmAppointment(stg patientAppointmentConfirmer) patients.Confirm
 		if appointment.Patient.ID == params.ID && appointment.Status == "pending" {
 			timeNow := time.Now()
 			diff := appointment.Date.Sub(timeNow)
-			if diff.Hours() > 0 && diff.Hours() < 24 {
+			if diff.Hours() > 0 && diff.Hours() < 12 {
 				err := stg.ConfirmAppointment(appointment.Patient.ID, appointment.ID)
 				if err != nil {
 					return patients.NewConfirmAppointmentForPatientInternalServerError().WithPayload(newRestApiError(err))

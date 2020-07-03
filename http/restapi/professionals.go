@@ -191,6 +191,7 @@ func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDurati
 	return func(params professionals.SetProfesionalScheduleBySpecialtyParams) middleware.Responder {
 		_, err := stg.GetProfessionalSpecialty(params.ID, params.IDSpecialty)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
@@ -204,41 +205,49 @@ func setProfessionalSchedules(stg professionalSchedulesSetter, appointmentDurati
 		str := fmt.Sprintf("%d-%d-01T00:00:00", *paramSchedule.Year, *paramSchedule.Month)
 		scheduleTime, err := time.Parse(layout, str)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 		if currentDate.After(scheduleTime) {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(rec.EditBeforeDate))
 		}
 
 		year, month, _, _, _, _ := diffDate(scheduleTime, currentDate)
 		if year > 1 || month > 2 || month < 0 {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(rec.EditMoreThanTwoMonths))
 		}
 		schedule := modelScheduleToDBSchedule(paramSchedule, params.IDSpecialty)
 
 		schedulesGetted, err := stg.SearchSchedule(params.ID, schedule.Year, schedule.Month)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
 		err = checkIfProfessionalsOverlapSpecialty(schedule, schedulesGetted)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
 		newSchedule, err := stg.SetProfessionalSchedule(params.ID, params.IDSpecialty, schedule)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
 		appointments, err := generateAppointmentsbySchedule(params.ID, params.IDSpecialty, newSchedule, appointmentDuration)
 		if err != nil {
+			fmt.Println(err)
 			return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 		}
 
 		for _, a := range appointments {
 			err := stg.CreateAppointment(a)
 			if err != nil {
+				fmt.Println(err)
 				return professionals.NewSetProfesionalScheduleBySpecialtyInternalServerError().WithPayload(newRestApiError(err))
 			}
 
@@ -263,6 +272,12 @@ func professionalCancelAppointment(stg professionalsAppointmentCanceler, emailSe
 
 		if appointment.Status == "cancelled" {
 			return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(rec.AppointmentAlreadyCancelled))
+		}
+
+		timeNow := time.Now()
+		diff := appointment.Date.Sub(timeNow)
+		if diff.Hours() < 168 {
+			return professionals.NewCancelAppointmentProfessionalInternalServerError().WithPayload(newRestApiError(rec.AppointmentCancelProfessional))
 		}
 
 		if appointment.Professional.ID == params.ID {

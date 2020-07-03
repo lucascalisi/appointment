@@ -67,4 +67,5 @@ var ScheduleAlreadySetted error = fmt.Errorf("not could set again the schedule f
 var PatientEmailNotFound error = fmt.Errorf("not could get email for patient")
 var AppointmentAlreadyCancelled error = fmt.Errorf("not could cancel the appointment")
 var PatientIsAlreadyWaiting error = fmt.Errorf("not could add patient to queue")
+var AppointmentCancelProfessional error = fmt.Errorf("not could cancel appointment without a prior week in advance")
 var NotFound error = fmt.Errorf("not found")

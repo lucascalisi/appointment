@@ -101,6 +101,12 @@ func newRestApiError(err error) *models.Error {
 			Code:        403,
 			Type:        "the patient is already in the waiting queue for this specialty",
 		}
+	case rec.AppointmentCancelProfessional:
+		return &models.Error{
+			Description: err.Error(),
+			Code:        403,
+			Type:        "the patient is already in the waiting queue for this specialty",
+		}
 	}
 	switch err.(type) {
 	default:
